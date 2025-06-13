@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="d-flex" style="min-height: 100vh;">
+
+  <!-- Sidebar -->
+  <div style="width: 220px; background-color: #f1f1f1;" class="p-3">
+    <div class="text-center mb-3">
+      <img src="{{ user.profile_image.url }}" class="rounded-circle mb-2" width="100" height="100" alt="Profile Image">
+      <h5>{{ user.username }}</h5>
+    </div>
+    <hr>
+    <ul class="nav flex-column">
+      <li class="nav-item mb-2">
+        <a href="?edit=1" class="nav-link text-dark">✏️ Edit Profile</a>
+      </li>
+      <li class="nav-item mb-2">
+        <a href="?membership=1" class="nav-link text-dark">💎 Membership</a>
+      </li>
+      <li class="nav-item mb-2">
+        <a href="#" class="nav-link text-dark">👩 Girls Profile</a>
+      </li>
+      <li class="nav-item mb-2">
+        <a href="#" class="nav-link text-dark">👦 Boys Profile</a>
+      </li>
+      <li class="nav-item mb-2">
+        <a href="#" class="nav-link text-dark">♿ Disabled Profile</a>
+      </li>
+      <li class="nav-item mb-2">
+        <a href="#" class="nav-link text-dark">💔 Divorced Profile</a>
+      </li>
+      <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow-1 p-4">
+    {% if show_form %}
+      <h4 class="mb-4">Edit Profile</h4>
+      <form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label for="username" class="form-label">Full Name</label>
+          <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" value="{{ user.password }}">
+        </div>
+
+        <div class="mb-3">
+          <label for="address" class="form-label">Address</label>
+          <textarea class="form-control" id="address" name="address">{{ user.address }}</textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="city" class="form-label">City</label>
+          <input type="text" class="form-control" id="city" name="city" value="{{ user.city }}">
+        </div>
+
+        <div class="mb-3">
+          <label for="state" class="form-label">State</label>
+          <input type="text" class="form-control" id="state" name="state" value="{{ user.state }}">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Gender</label><br>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="male" value="Male" {% if user.gender == 'Male' %}checked{% endif %}>
+            <label class="form-check-label" for="male">Male</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="female" value="Female" {% if user.gender == 'Female' %}checked{% endif %}>
+            <label class="form-check-label" for="female">Female</label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="profile_image" class="form-label">Profile Image</label><br>
+          <img src="{{ user.profile_image.url }}" width="100" class="mb-2"><br>
+          <input class="form-control" type="file" id="profile_image" name="profile_image">
+        </div>
+
+        <button type="submit" class="btn btn-success">Update Profile</button>
+      </form>
+
+    {% elif show_membership %}
+      <h4 class="mb-4">Choose Your Membership</h4>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+          <div class="card border-primary text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title">Silver</h5>
+              <p class="card-text">Basic matchmaking features.</p>
+              <h3>₹399</h3>
+              <button class="btn btn-primary">Buy Now</button>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-success text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title">Gold</h5>
+              <p class="card-text">Access to premium profiles.</p>
+              <h3>₹499</h3>
+              <button class="btn btn-success">Buy Now</button>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-warning text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title">Platinum</h5>
+              <p class="card-text">Priority matchmaking + Support.</p>
+              <h3>₹699</h3>
+              <button class="btn btn-warning">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-4">← Back to Profile</a>
+
+    {% else %}
+      <h4>Welcome, {{ user.username }}</h4>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Address:</strong> {{ user.address }}</p>
+      <p><strong>City:</strong> {{ user.city }}</p>
+      <p><strong>State:</strong> {{ user.state }}</p>
+      <p><strong>Gender:</strong> {{ user.gender }}</p>
+      {% comment %} <img src="{{ user.profile_image.url }}?{{ user.id }}" width="120" class="rounded mt-3" alt="Profile"> {% endcomment %}
+      <br><br>
+      {% comment %} <a href="?edit=1" class="btn btn-primary">✏️ Edit Profile</a> {% endcomment %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

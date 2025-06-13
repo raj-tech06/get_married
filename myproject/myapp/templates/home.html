@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<div class="d-flex justify-content-end align-items-center min-vh-100"
+     style="background: url('{% static 'img/formbg.jpg' %}') center center; margin-top: 1rem;">
+
+
+     <div class="card shadow-lg border-0 rounded-4 p-4"
+     style="margin-top: -6rem; margin-right: 1rem; width: 100%; max-width: 400px; background: rgba(241, 248, 233, 0.85);">
+
+    <h3 class="text-center mb-4 fw-bold" style="color: #33691e;">Register Now</h3>
+
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center py-2">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      <div class="form-floating mb-3">
+        <input type="text" name="username" class="form-control rounded-pill border-success" id="username" placeholder="Username" required>
+        <label for="username">Username</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="email" name="email" class="form-control rounded-pill border-primary" id="email" placeholder="Email" required>
+        <label for="email">Email</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="password" name="password" class="form-control rounded-pill border-info" id="password" placeholder="Password" required>
+        <label for="password">Password</label>
+      </div>
+
+      <div class="form-floating mb-4">
+        <input type="password" name="confirm_password" class="form-control rounded-pill border-warning" id="confirm_password" placeholder="Confirm Password" required>
+        <label for="confirm_password">Confirm Password</label>
+      </div>
+
+      <button type="submit" class="btn w-100 rounded-pill py-2" style="background: linear-gradient(to right, #43cea2, #185a9d); border: none; color: white; font-weight: bold;">
+        Register
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
