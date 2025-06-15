@@ -28,6 +28,8 @@ urlpatterns = [
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('logout/', views.logout_view, name='logout'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),  # ✅ Yeh add karo
+    path('delete_profile/<str:category>/<int:profile_id>/', views.delete_profile, name='delete_profile'),
+
 
 
 

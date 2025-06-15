@@ -11,65 +11,48 @@
     </div>
     <hr>
     <ul class="nav flex-column">
-      <li class="nav-item mb-2">
-        <a href="?edit=1" class="nav-link text-dark">✏️ Edit Profile</a>
-      </li>
-      <li class="nav-item mb-2">
-        <a href="?membership=1" class="nav-link text-dark">💎 Membership</a>
-      </li>
-      <li class="nav-item mb-2">
-        <a href="#" class="nav-link text-dark">👩 Girls Profile</a>
-      </li>
-      <li class="nav-item mb-2">
-        <a href="#" class="nav-link text-dark">👦 Boys Profile</a>
-      </li>
-      <li class="nav-item mb-2">
-        <a href="#" class="nav-link text-dark">♿ Disabled Profile</a>
-      </li>
-      <li class="nav-item mb-2">
-        <a href="#" class="nav-link text-dark">💔 Divorced Profile</a>
-      </li>
+      <li class="nav-item mb-2"><a href="?edit=1" class="nav-link text-dark">✏️ Edit Profile</a></li>
+      <li class="nav-item mb-2"><a href="?membership=1" class="nav-link text-dark">💎 Membership</a></li>
+      <li class="nav-item mb-2"><a href="?girls=1" class="nav-link text-dark">👩 Girls Profile</a></li>
+      <li class="nav-item mb-2"><a href="?boys=1" class="nav-link text-dark">👦 Boys Profile</a></li>
+      <li class="nav-item mb-2"><a href="?disabled=1" class="nav-link text-dark">♿ Disabled Profile</a></li>
+      <li class="nav-item mb-2"><a href="?divorced=1" class="nav-link text-dark">💔 Divorced Profile</a></li>
       <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
     </ul>
   </div>
 
   <!-- Main Content -->
   <div class="flex-grow-1 p-4">
+
     {% if show_form %}
+      <!-- Edit Profile Form -->
       <h4 class="mb-4">Edit Profile</h4>
       <form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-
         <div class="mb-3">
           <label for="username" class="form-label">Full Name</label>
           <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
         </div>
-
         <div class="mb-3">
           <label for="email" class="form-label">Email Address</label>
           <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
         </div>
-
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
           <input type="password" class="form-control" id="password" name="password" value="{{ user.password }}">
         </div>
-
         <div class="mb-3">
           <label for="address" class="form-label">Address</label>
           <textarea class="form-control" id="address" name="address">{{ user.address }}</textarea>
         </div>
-
         <div class="mb-3">
           <label for="city" class="form-label">City</label>
           <input type="text" class="form-control" id="city" name="city" value="{{ user.city }}">
         </div>
-
         <div class="mb-3">
           <label for="state" class="form-label">State</label>
           <input type="text" class="form-control" id="state" name="state" value="{{ user.state }}">
         </div>
-
         <div class="mb-3">
           <label class="form-label">Gender</label><br>
           <div class="form-check form-check-inline">
@@ -81,17 +64,16 @@
             <label class="form-check-label" for="female">Female</label>
           </div>
         </div>
-
         <div class="mb-3">
           <label for="profile_image" class="form-label">Profile Image</label><br>
           <img src="{{ user.profile_image.url }}" width="100" class="mb-2"><br>
           <input class="form-control" type="file" id="profile_image" name="profile_image">
         </div>
-
         <button type="submit" class="btn btn-success">Update Profile</button>
       </form>
 
     {% elif show_membership %}
+      <!-- Membership Plans -->
       <h4 class="mb-4">Choose Your Membership</h4>
       <div class="row row-cols-1 row-cols-md-3 g-4">
         <div class="col">
@@ -127,17 +109,92 @@
       </div>
       <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-4">← Back to Profile</a>
 
+    {% elif show_boys %}
+      <h4 class="mt-5 text-primary">Boys Profile</h4>
+      <div class="row">
+        {% for boy in boys_profiles %}
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow rounded-4 h-100">
+              <img src="{{ boy.image.url }}" class="card-img-top rounded-top" alt="{{ boy.name }}" style="height: 200px; object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title fw-bold">{{ boy.name }}</h5>
+                <p><strong>Email:</strong> {{ boy.email }}</p>
+                <p><strong>Phone:</strong> {{ boy.phone }}</p>
+                <p><strong>City:</strong> {{ boy.city }}, {{ boy.state }}</p>
+                <p><strong>Gender:</strong> {{ boy.gender }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    {% elif show_girls %}
+      <h4 class="mt-5 text-success">Girls Profile</h4>
+      <div class="row">
+        {% for girl in girls_profiles %}
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow rounded-4 h-100">
+              <img src="{{ girl.image.url }}" class="card-img-top rounded-top" alt="{{ girl.name }}" style="height: 200px; object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title fw-bold">{{ girl.name }}</h5>
+                <p><strong>Email:</strong> {{ girl.email }}</p>
+                <p><strong>Phone:</strong> {{ girl.phone }}</p>
+                <p><strong>City:</strong> {{ girl.city }}, {{ girl.state }}</p>
+                <p><strong>Gender:</strong> {{ girl.gender }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    {% elif show_disabled %}
+      <h4 class="mt-5 text-danger">Disabled Profile</h4>
+      <div class="row">
+        {% for d in disabled_profiles %}
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow rounded-4 h-100">
+              <img src="{{ d.image.url }}" class="card-img-top rounded-top" alt="{{ d.name }}" style="height: 200px; object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title fw-bold">{{ d.name }}</h5>
+                <p><strong>Email:</strong> {{ d.email }}</p>
+                <p><strong>Phone:</strong> {{ d.phone }}</p>
+                <p><strong>City:</strong> {{ d.city }}, {{ d.state }}</p>
+                <p><strong>Gender:</strong> {{ d.gender }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    {% elif show_divorced %}
+      <h4 class="mt-5 text-warning">Divorced Profile</h4>
+      <div class="row">
+        {% for d in divorced_profiles %}
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow rounded-4 h-100">
+              <img src="{{ d.image.url }}" class="card-img-top rounded-top" alt="{{ d.name }}" style="height: 200px; object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title fw-bold">{{ d.name }}</h5>
+                <p><strong>Email:</strong> {{ d.email }}</p>
+                <p><strong>Phone:</strong> {{ d.phone }}</p>
+                <p><strong>City:</strong> {{ d.city }}, {{ d.state }}</p>
+                <p><strong>Gender:</strong> {{ d.gender }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
     {% else %}
+      <!-- Default Welcome Section -->
       <h4>Welcome, {{ user.username }}</h4>
       <p><strong>Email:</strong> {{ user.email }}</p>
       <p><strong>Address:</strong> {{ user.address }}</p>
       <p><strong>City:</strong> {{ user.city }}</p>
       <p><strong>State:</strong> {{ user.state }}</p>
       <p><strong>Gender:</strong> {{ user.gender }}</p>
-      {% comment %} <img src="{{ user.profile_image.url }}?{{ user.id }}" width="120" class="rounded mt-3" alt="Profile"> {% endcomment %}
-      <br><br>
-      {% comment %} <a href="?edit=1" class="btn btn-primary">✏️ Edit Profile</a> {% endcomment %}
     {% endif %}
+
   </div>
 </div>
 {% endblock %}

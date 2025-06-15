@@ -23,3 +23,56 @@ class MyUser(models.Model):
         return self.username
 
 
+from django.db import models
+
+class GirlsProfile(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    address = models.TextField()
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    gender = models.CharField(max_length=10)
+    image = models.ImageField(upload_to='profiles/', default='profiles/default.png')
+
+    def __str__(self):
+        return self.name
+
+class BoysProfile(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    address = models.TextField()
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    gender = models.CharField(max_length=10)
+    image = models.ImageField(upload_to='profiles/', default='profiles/default.png')
+
+    def __str__(self):
+        return self.name
+
+class DisabledProfile(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    address = models.TextField()
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    gender = models.CharField(max_length=10)
+    image = models.ImageField(upload_to='profiles/', default='profiles/default.png')
+
+    def __str__(self):
+        return self.name
+
+class DivorcedProfile(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    address = models.TextField(null=True, blank=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    gender = models.CharField(max_length=10)
+    image = models.ImageField(upload_to='divorced_profiles/', default='profiles/default.png')
+
+    def __str__(self):
+        return self.name

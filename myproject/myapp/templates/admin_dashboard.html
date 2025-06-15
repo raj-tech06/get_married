@@ -2,15 +2,222 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-  <div class="text-center">
-    <h2 class="mb-4">Welcome to Admin Dashboard</h2>
-    <h4>Hello, <span class="text-success">{{ user_name }}</span> 👋</h4>
-    <h2>Welcome Admin: {{ user_name }}</h2>
-     <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+<div class="container-fluid">
+  <div class="row" style="min-height: 90vh;">
 
+    <!-- Sidebar -->
+    <div class="col-md-3 bg-light p-4 shadow-sm">
+      <h4 class="text-center mb-4">Admin Panel</h4>
+      <ul class="nav flex-column">
+        <li class="nav-item mb-3">
+          <a href="?view=add" class="btn btn-primary w-100">➕ Add Profile</a>
+        </li>
+        <li class="nav-item mb-3">
+          <a href="?view=all" class="btn btn-primary w-100">🌐 All Profiles</a>
+        </li>
+        <li class="nav-item mb-3">
+          <a href="{% url 'logout' %}" class="btn btn-danger w-100">🚪 Logout</a>
+        </li>
+      </ul>
+    </div>
 
-    
+    <!-- Main Content -->
+    <div class="col-md-9 p-4">
+      <div class="text-center mb-4">
+        <h2>Welcome Admin: <span class="text-success">{{ user_name }}</span></h2>
+      </div>
+
+      <div id="form-section" class="card shadow-lg border-0 rounded-4 p-4 bg-light">
+        {% if request.GET.view == "add" or not request.GET.view %}
+          <h4 class="mb-4 text-success fw-bold">➕ Add New User Profile</h4>
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Full Name</label>
+                <input type="text" name="name" placeholder="Full Name" class="form-control rounded-3" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Email</label>
+                <input type="email" name="email" placeholder="Email" class="form-control rounded-3" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Phone</label>
+                <input type="text" name="phone" placeholder="Phone" class="form-control rounded-3" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">City</label>
+                <input type="text" name="city" placeholder="City" class="form-control rounded-3" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">State</label>
+                <input type="text" name="state" placeholder="State" class="form-control rounded-3" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Gender</label>
+                <select name="gender" class="form-select rounded-3" required>
+                  <option value="" disabled selected>Choose Gender</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Upload Image</label>
+                <input type="file" name="image" class="form-control rounded-3">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Category</label>
+                <select name="category" class="form-select rounded-3" required>
+                  <option value="" disabled selected>Choose Category</option>
+                  <option value="girls">Girls</option>
+                  <option value="boys">Boys</option>
+                  <option value="disabled">Disabled</option>
+                  <option value="divorced">Divorced</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Address</label>
+                <textarea name="address" placeholder="Address" class="form-control rounded-3" rows="2" required></textarea>
+              </div>
+
+              <div class="col-12 text-end">
+                <button type="submit" class="btn btn-success px-4 rounded-pill">Save Profile</button>
+              </div>
+
+            </div>
+          </form>
+
+        {% elif request.GET.view == "all" %}
+          <h4 class="mb-4 fw-bold text-primary">🌐 All Profiles</h4>
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+              <a href="?view=girls" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 text-center h-100">
+                  <div class="card-body">
+                    <div class="fs-1 mb-2">👧</div>
+                    <h5 class="card-title">Girls Profile</h5>
+                    <p class="text-muted small">View all registered girls</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <a href="?view=boys" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 text-center h-100">
+                  <div class="card-body">
+                    <div class="fs-1 mb-2">👦</div>
+                    <h5 class="card-title">Boys Profile</h5>
+                    <p class="text-muted small">View all registered boys</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <a href="?view=disabled" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 text-center h-100">
+                  <div class="card-body">
+                    <div class="fs-1 mb-2">♿</div>
+                    <h5 class="card-title">Disabled Profile</h5>
+                    <p class="text-muted small">View all disabled users</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+              <a href="?view=divorced" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 text-center h-100">
+                  <div class="card-body">
+                    <div class="fs-1 mb-2">💔</div>
+                    <h5 class="card-title">Divorced Profile</h5>
+                    <p class="text-muted small">View all divorced users</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+        {% elif request.GET.view == "girls" %}
+          <h4 class="mb-3 text-primary">👧 Girls Profiles</h4>
+          <div class="row g-4">
+            {% for girl in girls %}
+              <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                  <img src="{{ girl.image.url }}" class="card-img-top" alt="{{ girl.name }}">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ girl.name }}</h5>
+                    <p class="card-text">{{ girl.city }}, {{ girl.state }}</p>
+                    <p class="text-muted small">{{ girl.email }} | {{ girl.phone }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+        {% elif request.GET.view == "boys" %}
+          <h4 class="mb-3 text-primary">👦 Boys Profiles</h4>
+          <div class="row g-4">
+            {% for boy in boys %}
+              <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                  <img src="{{ boy.image.url }}" class="card-img-top" alt="{{ boy.name }}">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ boy.name }}</h5>
+                    <p class="card-text">{{ boy.city }}, {{ boy.state }}</p>
+                    <p class="text-muted small">{{ boy.email }} | {{ boy.phone }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+        {% elif request.GET.view == "disabled" %}
+          <h4 class="mb-3 text-primary">♿ Disabled Profiles</h4>
+          <div class="row g-4">
+            {% for dis in disabled %}
+              <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                  <img src="{{ dis.image.url }}" class="card-img-top" alt="{{ dis.name }}">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ dis.name }}</h5>
+                    <p class="card-text">{{ dis.city }}, {{ dis.state }}</p>
+                    <p class="text-muted small">{{ dis.email }} | {{ dis.phone }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+        {% elif request.GET.view == "divorced" %}
+          <h4 class="mb-3 text-primary">💔 Divorced Profiles</h4>
+          <div class="row g-4">
+            {% for div in divorced %}
+              <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                  <img src="{{ div.image.url }}" class="card-img-top" alt="{{ div.name }}">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ div.name }}</h5>
+                    <p class="card-text">{{ div.city }}, {{ div.state }}</p>
+                    <p class="text-muted small">{{ div.email }} | {{ div.phone }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

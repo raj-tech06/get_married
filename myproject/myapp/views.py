@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import MyUser
+from .models import MyUser, BoysProfile, GirlsProfile, DisabledProfile, DivorcedProfile
 
-# ✅ Registration View
-
+# --------------------- REGISTRATION ---------------------
 def register_view(request):
     if request.method == "POST":
         username = request.POST.get('username')
@@ -19,16 +18,14 @@ def register_view(request):
             messages.error(request, "Email already registered!")
             return redirect('register')
 
-        user = MyUser(username=username, email=email, password=password)
-        user.save()
-
+        MyUser.objects.create(username=username, email=email, password=password)
         messages.success(request, "Registration successful! Please log in.")
         return redirect('login_user')
 
     return render(request, 'home.html')
 
 
-# ✅ Login View
+# --------------------- LOGIN ---------------------
 def login_user(request):
     if request.method == "POST":
         email = request.POST.get('email')
@@ -42,11 +39,9 @@ def login_user(request):
                 request.session['user_email'] = user.email
                 request.session['user_name'] = user.username
 
-                # ✅ Simple check for admin email
                 if email == 'admin@gmail.com':
                     return redirect('admin_dashboard')
-                else:
-                    return redirect('user_dashboard')
+                return redirect('user_dashboard')
             else:
                 messages.error(request, "Incorrect password")
         except MyUser.DoesNotExist:
@@ -54,94 +49,82 @@ def login_user(request):
 
     return render(request, 'login.html')
 
-# ✅ Admin Dashboard View
-def admin_dashboard(request):
-    if 'user_id' not in request.session:
-        return redirect('login_user')
 
+# --------------------- LOGOUT ---------------------
+def logout_view(request):
+    request.session.flush()
+    return redirect('login_user')
+
+
+# --------------------- ADMIN DASHBOARD ---------------------
+from .models import GirlsProfile, BoysProfile, DisabledProfile, DivorcedProfile
+
+def admin_dashboard(request):
     if request.session.get('user_email') != 'admin@gmail.com':
-        return redirect('dashboard')  # Normal user ko hata do
+        return redirect('user_dashboard')
 
     user_name = request.session.get('user_name')
-    return render(request, 'admin_dashboard.html', {'user_name': user_name})
+
+    # If profile form is submitted
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        gender = request.POST.get('gender')
+        category = request.POST.get('category')
+        image = request.FILES.get('image')
+
+        profile_data = {
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'address': address,
+            'city': city,
+            'state': state,
+            'gender': gender,
+            'image': image,
+        }
+
+        if category == 'girls':
+            GirlsProfile.objects.create(**profile_data)
+        elif category == 'boys':
+            BoysProfile.objects.create(**profile_data)
+        elif category == 'disabled':
+            DisabledProfile.objects.create(**profile_data)
+        elif category == 'divorced':
+            DivorcedProfile.objects.create(**profile_data)
+
+        return redirect('admin_dashboard')
+
+    # GET Request → Check view param
+    view_type = request.GET.get('view', '')
+
+    context = {
+        'user_name': user_name,
+    }
+
+    # Add profile lists according to view
+    if view_type == 'girls':
+        context['girls'] = GirlsProfile.objects.all()
+    elif view_type == 'boys':
+        context['boys'] = BoysProfile.objects.all()
+    elif view_type == 'disabled':
+        context['disabled'] = DisabledProfile.objects.all()
+    elif view_type == 'divorced':
+        context['divorced'] = DivorcedProfile.objects.all()
+
+    return render(request, 'admin_dashboard.html', context)
 
 
-
-# ✅ Normal Dashboard View
-from django.shortcuts import render, redirect
-from .models import MyUser
-
-
-
-# def user_dashboard(request):
-#     if 'user_id' not in request.session:
-#         return redirect('login_user')
-
-#     try:
-#         user = MyUser.objects.get(id=request.session['user_id'])
-#     except MyUser.DoesNotExist:
-#         return redirect('login_user')
-
-#     if request.method == 'POST':
-#         user.username = request.POST.get('username')
-#         user.email = request.POST.get('email')
-#         user.password = request.POST.get('password')
-#         user.address = request.POST.get('address')
-#         user.city = request.POST.get('city')
-#         user.state = request.POST.get('state')
-#         user.gender = request.POST.get('gender')
-
-#         if 'profile_image' in request.FILES:
-#             user.profile_image = request.FILES['profile_image']
-
-#         user.save()
-#         return redirect('user_dashboard')  # Or 'user_dashboard' depending on your URL name
-
-#     context = {
-#         'user': user,
-#         'show_form': False  # show profile by default
-#     }
-#     return render(request, 'dashboard.html', context)
-
-
-# def user_dashboard(request):
-#     if 'user_id' not in request.session:
-#         return redirect('login_user')
-
-#     try:
-#         user = MyUser.objects.get(id=request.session['user_id'])
-#     except MyUser.DoesNotExist:
-#         return redirect('login_user')
-
-#     if request.method == 'POST':
-#         user.username = request.POST.get('username')
-#         user.email = request.POST.get('email')
-#         user.password = request.POST.get('password')
-#         user.address = request.POST.get('address')
-#         user.city = request.POST.get('city')
-#         user.state = request.POST.get('state')
-#         user.gender = request.POST.get('gender')
-
-#         if 'profile_image' in request.FILES:
-#         # Delete old image file if not default
-#             if user.profile_image and user.profile_image.name != 'default.jpg':
-#                 user.profile_image.delete(save=False)
-#             user.profile_image = request.FILES['profile_image']
-
-#         user.save()
-
-#         # Update session username if changed
-#         request.session['user_name'] = user.username
-
-#         return redirect('user_dashboard')  # reload without POST
-
-#     return render(request, 'dashboard.html', {
-#         'user': user,
-#         'show_form': False  # form hidden by default
-#     })
-
-
+# --------------------- USER DASHBOARD ---------------------
 def user_dashboard(request):
+    # Block admin login from using this dashboard
+    # if request.session.get('user_email') == 'admin@gmail.com':
+    #     return redirect('admin_dashboard')
+
     if 'user_id' not in request.session:
         return redirect('login_user')
 
@@ -150,44 +133,43 @@ def user_dashboard(request):
     except MyUser.DoesNotExist:
         return redirect('login_user')
 
-    # Flags from GET parameters
+    # Show sections based on GET parameters
     show_form = request.GET.get('edit') == '1'
     show_membership = request.GET.get('membership') == '1'
+    show_boys = request.GET.get('boys') == '1'
+    show_girls = request.GET.get('girls') == '1'
+    show_disabled = request.GET.get('disabled') == '1'
+    show_divorced = request.GET.get('divorced') == '1'
 
     if request.method == 'POST':
-        user.username = request.POST.get('username')
-        user.email = request.POST.get('email')
-        user.password = request.POST.get('password')
-        user.address = request.POST.get('address')
-        user.city = request.POST.get('city')
-        user.state = request.POST.get('state')
-        user.gender = request.POST.get('gender')
-
+        user.username = request.POST['username']
+        user.email = request.POST['email']
+        user.password = request.POST['password']
+        user.address = request.POST['address']
+        user.city = request.POST['city']
+        user.state = request.POST['state']
+        user.gender = request.POST['gender']
         if 'profile_image' in request.FILES:
-            if user.profile_image and user.profile_image.name != 'profiles/default.png':
-                user.profile_image.delete(save=False)
             user.profile_image = request.FILES['profile_image']
-
         user.save()
-        request.session['user_name'] = user.username
         return redirect('user_dashboard')
 
     return render(request, 'dashboard.html', {
         'user': user,
         'show_form': show_form,
         'show_membership': show_membership,
+        'show_boys': show_boys,
+        'show_girls': show_girls,
+        'show_disabled': show_disabled,
+        'show_divorced': show_divorced,
+        'boys_profiles': BoysProfile.objects.all(),
+        'girls_profiles': GirlsProfile.objects.all(),
+        'disabled_profiles': DisabledProfile.objects.all(),
+        'divorced_profiles': DivorcedProfile.objects.all(),
     })
 
 
-
-def logout_view(request):
-    request.session.flush()  # session clear kar do
-    return redirect('login_user')
-
-
-
-# -------------------------user dashboard ke andar=================
-
+# --------------------- PROFILE EDIT SHORTCUT ---------------------
 def edit_profile(request):
     if 'user_id' not in request.session:
         return redirect('login_user')
@@ -199,5 +181,32 @@ def edit_profile(request):
 
     return render(request, 'dashboard.html', {
         'user': user,
-        'show_form': True  # this will show the form
+        'show_form': True
     })
+
+
+from django.contrib import messages
+
+def delete_profile(request, category, profile_id):
+    if request.session.get('user_email') != 'admin@gmail.com':
+        return redirect('user_dashboard')
+
+    model_map = {
+        'girls': GirlsProfile,
+        'boys': BoysProfile,
+        'disabled': DisabledProfile,
+        'divorced': DivorcedProfile,
+    }
+
+    Model = model_map.get(category)
+    if Model:
+        try:
+            profile = Model.objects.get(id=profile_id)
+            profile.delete()
+            messages.success(request, f"{category.title()} profile deleted successfully.")
+        except Model.DoesNotExist:
+            messages.error(request, "Profile not found.")
+    else:
+        messages.error(request, "Invalid category.")
+
+    return redirect(f'/admin_dashboard/?view={category}')
