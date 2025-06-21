@@ -1,19 +1,38 @@
 {% extends 'base.html' %}
 {% block title %}Admin Dashboard{% endblock %}
+{% load static %}
+
 
 {% block content %}
+
 <div class="container-fluid">
   <div class="row" style="min-height: 90vh;">
+<!-- Admin Dashboard or any template -->
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endif %}
 
     <!-- Sidebar -->
     <div class="col-md-3 bg-light p-4 shadow-sm">
       <h4 class="text-center mb-4">Admin Panel</h4>
       <ul class="nav flex-column">
+          <li class="nav-item mb-3">
+          <a href="?view=admin" class="btn btn-primary w-100">Admin</a>
+        </li>
         <li class="nav-item mb-3">
           <a href="?view=add" class="btn btn-primary w-100">➕ Add Profile</a>
         </li>
         <li class="nav-item mb-3">
           <a href="?view=all" class="btn btn-primary w-100">🌐 All Profiles</a>
+        </li>
+        <li class="nav-item mb-3">
+          <a href="?view=users" class="btn btn-primary w-100">👥 All Registered Users</a>
         </li>
         <li class="nav-item mb-3">
           <a href="{% url 'logout' %}" class="btn btn-danger w-100">🚪 Logout</a>
@@ -33,32 +52,26 @@
           <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row g-3">
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Full Name</label>
                 <input type="text" name="name" placeholder="Full Name" class="form-control rounded-3" required>
               </div>
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Email</label>
                 <input type="email" name="email" placeholder="Email" class="form-control rounded-3" required>
               </div>
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Phone</label>
                 <input type="text" name="phone" placeholder="Phone" class="form-control rounded-3" required>
               </div>
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">City</label>
                 <input type="text" name="city" placeholder="City" class="form-control rounded-3" required>
               </div>
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">State</label>
                 <input type="text" name="state" placeholder="State" class="form-control rounded-3" required>
               </div>
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Gender</label>
                 <select name="gender" class="form-select rounded-3" required>
@@ -67,12 +80,10 @@
                   <option>Female</option>
                 </select>
               </div>
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Upload Image</label>
                 <input type="file" name="image" class="form-control rounded-3">
               </div>
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Category</label>
                 <select name="category" class="form-select rounded-3" required>
@@ -83,18 +94,60 @@
                   <option value="divorced">Divorced</option>
                 </select>
               </div>
-
               <div class="col-12">
                 <label class="form-label fw-semibold">Address</label>
                 <textarea name="address" placeholder="Address" class="form-control rounded-3" rows="2" required></textarea>
               </div>
-
               <div class="col-12 text-end">
                 <button type="submit" class="btn btn-success px-4 rounded-pill">Save Profile</button>
               </div>
-
             </div>
           </form>
+
+          {% elif request.GET.view == "users" %}
+          <h4 class="mb-3 text-primary">👥 All Registered Users</h4>
+          <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
+
+          <div class="row g-4">
+            {% for user in users %}
+              <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+
+                  <!-- User Image -->
+                  {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="card-img-top" alt="{{ user.username }}">
+                  {% else %}
+                    <img src="{% static 'img/default.jpg' %}" class="card-img-top" alt="Default User">
+                  {% endif %}
+
+                  <!-- User Details -->
+                  <div class="card-body">
+                    <h5 class="card-title">{{ user.username }}</h5>
+                    <p class="card-text">{{ user.city }}, {{ user.state }}</p>
+                    <p class="text-muted small">{{ user.email }}{% if user.phone %} | {{ user.phone }}{% endif %}</p>
+                    <p class="text-muted small">Gender: {{ user.gender }}</p>
+
+                    <!-- Action Buttons -->
+
+                    <form method="POST" action="{% url 'delete_user' user.id %}" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger btn-sm mt-2">Delete</button>
+                    </form>
+
+                    <form method="POST" action="{% url 'block_user' user.id %}" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn {% if user.is_blocked %}btn-success{% else %}btn-warning{% endif %} btn-sm mt-2">
+                        {% if user.is_blocked %}Unblock{% else %}Block{% endif %}
+                      </button>
+                    </form>
+
+                  </div>
+
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
 
         {% elif request.GET.view == "all" %}
           <h4 class="mb-4 fw-bold text-primary">🌐 All Profiles</h4>
@@ -110,7 +163,6 @@
                 </div>
               </a>
             </div>
-
             <div class="col-md-6 col-lg-3">
               <a href="?view=boys" class="text-decoration-none text-dark">
                 <div class="card shadow-sm border-0 text-center h-100">
@@ -122,7 +174,6 @@
                 </div>
               </a>
             </div>
-
             <div class="col-md-6 col-lg-3">
               <a href="?view=disabled" class="text-decoration-none text-dark">
                 <div class="card shadow-sm border-0 text-center h-100">
@@ -134,7 +185,6 @@
                 </div>
               </a>
             </div>
-
             <div class="col-md-6 col-lg-3">
               <a href="?view=divorced" class="text-decoration-none text-dark">
                 <div class="card shadow-sm border-0 text-center h-100">
@@ -149,6 +199,7 @@
           </div>
 
         {% elif request.GET.view == "girls" %}
+          <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
           <h4 class="mb-3 text-primary">👧 Girls Profiles</h4>
           <div class="row g-4">
             {% for girl in girls %}
@@ -160,12 +211,16 @@
                     <p class="card-text">{{ girl.city }}, {{ girl.state }}</p>
                     <p class="text-muted small">{{ girl.email }} | {{ girl.phone }}</p>
                   </div>
+                  <div class="card-footer text-end bg-white border-0">
+                    <a href="{% url 'delete_profile' category='girls' id=girl.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this profile?');">🗑 Delete</a>
+                  </div>
                 </div>
               </div>
             {% endfor %}
           </div>
 
         {% elif request.GET.view == "boys" %}
+          <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
           <h4 class="mb-3 text-primary">👦 Boys Profiles</h4>
           <div class="row g-4">
             {% for boy in boys %}
@@ -177,12 +232,16 @@
                     <p class="card-text">{{ boy.city }}, {{ boy.state }}</p>
                     <p class="text-muted small">{{ boy.email }} | {{ boy.phone }}</p>
                   </div>
+                  <div class="card-footer text-end bg-white border-0">
+                    <a href="{% url 'delete_profile' category='boys' id=boy.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this profile?');">🗑 Delete</a>
+                  </div>
                 </div>
               </div>
             {% endfor %}
           </div>
 
         {% elif request.GET.view == "disabled" %}
+          <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
           <h4 class="mb-3 text-primary">♿ Disabled Profiles</h4>
           <div class="row g-4">
             {% for dis in disabled %}
@@ -194,12 +253,16 @@
                     <p class="card-text">{{ dis.city }}, {{ dis.state }}</p>
                     <p class="text-muted small">{{ dis.email }} | {{ dis.phone }}</p>
                   </div>
+                  <div class="card-footer text-end bg-white border-0">
+                    <a href="{% url 'delete_profile' category='disabled' id=dis.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this profile?');">🗑 Delete</a>
+                  </div>
                 </div>
               </div>
             {% endfor %}
           </div>
 
         {% elif request.GET.view == "divorced" %}
+          <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
           <h4 class="mb-3 text-primary">💔 Divorced Profiles</h4>
           <div class="row g-4">
             {% for div in divorced %}
@@ -211,6 +274,9 @@
                     <p class="card-text">{{ div.city }}, {{ div.state }}</p>
                     <p class="text-muted small">{{ div.email }} | {{ div.phone }}</p>
                   </div>
+                  <div class="card-footer text-end bg-white border-0">
+                    <a href="{% url 'delete_profile' category='divorced' id=div.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this profile?');">🗑 Delete</a>
+                  </div>
                 </div>
               </div>
             {% endfor %}
@@ -220,4 +286,6 @@
     </div>
   </div>
 </div>
+
+
 {% endblock %}

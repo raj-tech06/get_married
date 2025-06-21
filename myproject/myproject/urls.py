@@ -25,10 +25,14 @@ urlpatterns = [
     path('', views.register_view, name='register'),
     path('login/', views.login_user, name='login_user'),
     path('user_dashboard/', views.user_dashboard, name='user_dashboard'),
-    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),  # changed
     path('logout/', views.logout_view, name='logout'),
-    path('edit-profile/', views.edit_profile, name='edit_profile'),  # ✅ Yeh add karo
-    path('delete_profile/<str:category>/<int:profile_id>/', views.delete_profile, name='delete_profile'),
+    path('edit_profile/', views.edit_profile, name='edit_profile'),  # changed
+    path('delete_profile/<str:category>/<int:id>/', views.delete_profile, name='delete_profile'),  # changed
+    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),  # changed
+    path('block_user/<int:user_id>/', views.block_user, name='block_user'),  # changed
+
+
 
 
 

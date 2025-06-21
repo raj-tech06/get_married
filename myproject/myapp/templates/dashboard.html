@@ -6,7 +6,9 @@
   <!-- Sidebar -->
   <div style="width: 220px; background-color: #f1f1f1;" class="p-3">
     <div class="text-center mb-3">
-      <img src="{{ user.profile_image.url }}" class="rounded-circle mb-2" width="100" height="100" alt="Profile Image">
+      {% if user.profile_image %}
+        <img src="{{ user.profile_image.url }}" class="rounded-circle mb-2" width="100" height="100" alt="Profile Image">
+      {% endif %}
       <h5>{{ user.username }}</h5>
     </div>
     <hr>
@@ -66,7 +68,9 @@
         </div>
         <div class="mb-3">
           <label for="profile_image" class="form-label">Profile Image</label><br>
-          <img src="{{ user.profile_image.url }}" width="100" class="mb-2"><br>
+          {% if user.profile_image %}
+            <img src="{{ user.profile_image.url }}" width="100" class="mb-2"><br>
+          {% endif %}
           <input class="form-control" type="file" id="profile_image" name="profile_image">
         </div>
         <button type="submit" class="btn btn-success">Update Profile</button>
@@ -115,7 +119,9 @@
         {% for boy in boys_profiles %}
           <div class="col-md-4 mb-4">
             <div class="card border-0 shadow rounded-4 h-100">
-              <img src="{{ boy.image.url }}" class="card-img-top rounded-top" alt="{{ boy.name }}" style="height: 200px; object-fit: cover;">
+              {% if boy.image %}
+                <img src="{{ boy.image.url }}" class="card-img-top rounded-top" alt="{{ boy.name }}" style="height: 200px; object-fit: cover;">
+              {% endif %}
               <div class="card-body">
                 <h5 class="card-title fw-bold">{{ boy.name }}</h5>
                 <p><strong>Email:</strong> {{ boy.email }}</p>
@@ -134,7 +140,9 @@
         {% for girl in girls_profiles %}
           <div class="col-md-4 mb-4">
             <div class="card border-0 shadow rounded-4 h-100">
-              <img src="{{ girl.image.url }}" class="card-img-top rounded-top" alt="{{ girl.name }}" style="height: 200px; object-fit: cover;">
+              {% if girl.image %}
+                <img src="{{ girl.image.url }}" class="card-img-top rounded-top" alt="{{ girl.name }}" style="height: 200px; object-fit: cover;">
+              {% endif %}
               <div class="card-body">
                 <h5 class="card-title fw-bold">{{ girl.name }}</h5>
                 <p><strong>Email:</strong> {{ girl.email }}</p>
@@ -150,16 +158,18 @@
     {% elif show_disabled %}
       <h4 class="mt-5 text-danger">Disabled Profile</h4>
       <div class="row">
-        {% for d in disabled_profiles %}
+        {% for disabled in disabled_profiles %}
           <div class="col-md-4 mb-4">
             <div class="card border-0 shadow rounded-4 h-100">
-              <img src="{{ d.image.url }}" class="card-img-top rounded-top" alt="{{ d.name }}" style="height: 200px; object-fit: cover;">
+              {% if disabled.image %}
+                <img src="{{ disabled.image.url }}" class="card-img-top rounded-top" alt="{{ disabled.name }}" style="height: 200px; object-fit: cover;">
+              {% endif %}
               <div class="card-body">
-                <h5 class="card-title fw-bold">{{ d.name }}</h5>
-                <p><strong>Email:</strong> {{ d.email }}</p>
-                <p><strong>Phone:</strong> {{ d.phone }}</p>
-                <p><strong>City:</strong> {{ d.city }}, {{ d.state }}</p>
-                <p><strong>Gender:</strong> {{ d.gender }}</p>
+                <h5 class="card-title fw-bold">{{ disabled.name }}</h5>
+                <p><strong>Email:</strong> {{ disabled.email }}</p>
+                <p><strong>Phone:</strong> {{ disabled.phone }}</p>
+                <p><strong>City:</strong> {{ disabled.city }}, {{ disabled.state }}</p>
+                <p><strong>Gender:</strong> {{ disabled.gender }}</p>
               </div>
             </div>
           </div>
@@ -169,16 +179,18 @@
     {% elif show_divorced %}
       <h4 class="mt-5 text-warning">Divorced Profile</h4>
       <div class="row">
-        {% for d in divorced_profiles %}
+        {% for divorced in divorced_profiles %}
           <div class="col-md-4 mb-4">
             <div class="card border-0 shadow rounded-4 h-100">
-              <img src="{{ d.image.url }}" class="card-img-top rounded-top" alt="{{ d.name }}" style="height: 200px; object-fit: cover;">
+              {% if divorced.image %}
+                <img src="{{ divorced.image.url }}" class="card-img-top rounded-top" alt="{{ divorced.name }}" style="height: 200px; object-fit: cover;">
+              {% endif %}
               <div class="card-body">
-                <h5 class="card-title fw-bold">{{ d.name }}</h5>
-                <p><strong>Email:</strong> {{ d.email }}</p>
-                <p><strong>Phone:</strong> {{ d.phone }}</p>
-                <p><strong>City:</strong> {{ d.city }}, {{ d.state }}</p>
-                <p><strong>Gender:</strong> {{ d.gender }}</p>
+                <h5 class="card-title fw-bold">{{ divorced.name }}</h5>
+                <p><strong>Email:</strong> {{ divorced.email }}</p>
+                <p><strong>Phone:</strong> {{ divorced.phone }}</p>
+                <p><strong>City:</strong> {{ divorced.city }}, {{ d.state }}</p>
+                <p><strong>Gender:</strong> {{ divorced.gender }}</p>
               </div>
             </div>
           </div>
