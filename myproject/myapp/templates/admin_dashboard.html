@@ -53,9 +53,13 @@
             {% csrf_token %}
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Full Name</label>
+                <label class="form-label fw-semibold">Name</label>
                 <input type="text" name="name" placeholder="Full Name" class="form-control rounded-3" required>
               </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Caste</label>
+                <input type="text" name="lastname" placeholder="last Name" class="form-control rounded-3" required>
+              </div>              
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Email</label>
                 <input type="email" name="email" placeholder="Email" class="form-control rounded-3" required>

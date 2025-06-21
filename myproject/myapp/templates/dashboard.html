@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="d-flex" style="min-height: 100vh;">
+<div class="d-flex" style="min-height: 100vh; align-items: stretch;">
 
   <!-- Sidebar -->
-  <div style="width: 220px; background-color: #f1f1f1;" class="p-3">
+  <div style="width: 250px; background-color: #f1f1f1; flex-shrink: 0;" class="p-3">
     <div class="text-center mb-3">
       {% if user.profile_image %}
         <img src="{{ user.profile_image.url }}" class="rounded-circle mb-2" width="100" height="100" alt="Profile Image">
@@ -27,7 +27,6 @@
   <div class="flex-grow-1 p-4">
 
     {% if show_form %}
-      <!-- Edit Profile Form -->
       <h4 class="mb-4">Edit Profile</h4>
       <form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -35,6 +34,10 @@
           <label for="username" class="form-label">Full Name</label>
           <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
         </div>
+        <div class="mb-3">
+          <label for="username" class="form-label">last Name</label>
+          <input type="text" class="form-control" id="username" name="lastname" value="{{ user.caste }}">
+        </div>        
         <div class="mb-3">
           <label for="email" class="form-label">Email Address</label>
           <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
@@ -76,7 +79,7 @@
         <button type="submit" class="btn btn-success">Update Profile</button>
       </form>
 
-    {% elif show_membership %}
+{% elif show_membership %}
       <!-- Membership Plans -->
       <h4 class="mb-4">Choose Your Membership</h4>
       <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -113,29 +116,75 @@
       </div>
       <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-4">← Back to Profile</a>
 
-    {% elif show_boys %}
-      <h4 class="mt-5 text-primary">Boys Profile</h4>
-      <div class="row">
-        {% for boy in boys_profiles %}
-          <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow rounded-4 h-100">
-              {% if boy.image %}
-                <img src="{{ boy.image.url }}" class="card-img-top rounded-top" alt="{{ boy.name }}" style="height: 200px; object-fit: cover;">
-              {% endif %}
-              <div class="card-body">
-                <h5 class="card-title fw-bold">{{ boy.name }}</h5>
-                <p><strong>Email:</strong> {{ boy.email }}</p>
-                <p><strong>Phone:</strong> {{ boy.phone }}</p>
-                <p><strong>City:</strong> {{ boy.city }}, {{ boy.state }}</p>
-                <p><strong>Gender:</strong> {{ boy.gender }}</p>
-              </div>
-            </div>
-          </div>
+
+    <!-- Example for Boys Profile -->
+{% elif show_boys %}
+  <h4 class="mt-5 text-primary">Boys Profile</h4>
+
+  <!-- Filter/Search Form -->
+  <form method="GET" class="row g-3 mb-4">
+    <input type="hidden" name="boys" value="1">
+    <div class="col-md-6">
+      <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
+    </div>
+    <div class="col-md-4">
+      <select name="caste" class="form-select">
+        <option value="">Filter by caste</option>
+        {% for caste in caste_choices %}
+          <option value="{{ caste }}" {% if caste == selected_caste %}selected{% endif %}>{{ caste }}</option>
         {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+
+  <div class="row">
+    {% for boy in boys_profiles %}
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow rounded-4 h-100">
+          {% if boy.image %}
+            <img src="{{ boy.image.url }}" class="card-img-top rounded-top" alt="{{ boy.name }}" style="height: 200px; object-fit: cover;">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ boy.name }}  {{ boy.caste }}</h5>
+            <p><strong>Email:</strong> {{ boy.email }}</p>
+            <p><strong>Phone:</strong> {{ boy.phone }}</p>
+            <p><strong>City:</strong> {{ boy.city }}, {{ boy.state }}</p>
+            <p><strong>Gender:</strong> {{ boy.gender }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
       </div>
 
+
     {% elif show_girls %}
-      <h4 class="mt-5 text-success">Girls Profile</h4>
+      <h4 class="mt-3 text-success">Girls Profile</h4>
+
+      <!-- Filter/Search Form -->
+      <form method="GET" class="row g-3 mb-4">
+        <input type="hidden" name="girls" value="1">
+        <div class="col-md-6">
+          <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
+        </div>
+        <div class="col-md-4">
+          <select name="caste" class="form-select">
+            <option value="">Filter by caste</option>
+            {% for caste in caste_choices %}
+              <option value="{{ caste }}" {% if caste == selected_caste %}selected{% endif %}>{{ caste }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100">Search</button>
+        </div>
+      </form>
+
+      <!-- Girls Cards -->
       <div class="row">
         {% for girl in girls_profiles %}
           <div class="col-md-4 mb-4">
@@ -144,7 +193,7 @@
                 <img src="{{ girl.image.url }}" class="card-img-top rounded-top" alt="{{ girl.name }}" style="height: 200px; object-fit: cover;">
               {% endif %}
               <div class="card-body">
-                <h5 class="card-title fw-bold">{{ girl.name }}</h5>
+                <h5 class="card-title fw-bold">{{ girl.name }}  {{ girl.caste }}</h5>
                 <p><strong>Email:</strong> {{ girl.email }}</p>
                 <p><strong>Phone:</strong> {{ girl.phone }}</p>
                 <p><strong>City:</strong> {{ girl.city }}, {{ girl.state }}</p>
@@ -155,7 +204,8 @@
         {% endfor %}
       </div>
 
-    {% elif show_disabled %}
+
+    {% comment %} {% elif show_disabled %}
       <h4 class="mt-5 text-danger">Disabled Profile</h4>
       <div class="row">
         {% for disabled in disabled_profiles %}
@@ -174,8 +224,51 @@
             </div>
           </div>
         {% endfor %}
-      </div>
+      </div> {% endcomment %}
 
+      <!-- Example for Disabled Profile -->
+{% elif show_disabled %}
+  <h4 class="mt-5 text-primary">Disabled Profile</h4>
+
+  <!-- Filter/Search Form -->
+  <form method="GET" class="row g-3 mb-4">
+    <input type="hidden" name="disabled" value="1">
+    <div class="col-md-6">
+      <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
+    </div>
+    <div class="col-md-4">
+      <select name="caste" class="form-select">
+        <option value="">Filter by caste</option>
+        {% for caste in caste_choices %}
+          <option value="{{ caste }}" {% if caste == selected_caste %}selected{% endif %}>{{ caste }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+
+  <div class="row">
+    {% for disabled in disabled_profiles %}
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow rounded-4 h-100">
+          {% if disabled.image %}
+            <img src="{{ disabled.image.url }}" class="card-img-top rounded-top" alt="{{ disabled.name }}" style="height: 200px; object-fit: cover;">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ disabled.name }}  {{ disabled.caste }}</h5>
+            <p><strong>Email:</strong> {{ disabled.email }}</p>
+            <p><strong>Phone:</strong> {{ disabled.phone }}</p>
+            <p><strong>City:</strong> {{ disabled.city }}, {{ disabled.state }}</p>
+            <p><strong>Gender:</strong> {{ disabled.gender }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+{% comment %} 
     {% elif show_divorced %}
       <h4 class="mt-5 text-warning">Divorced Profile</h4>
       <div class="row">
@@ -195,11 +288,52 @@
             </div>
           </div>
         {% endfor %}
+      </div> {% endcomment %}
+<!-- Example for Disabled Profile -->
+{% elif show_divorced %}
+  <h4 class="mt-5 text-primary">Divorced Profile</h4>
+
+  <!-- Filter/Search Form -->
+  <form method="GET" class="row g-3 mb-4">
+    <input type="hidden" name="disabled" value="1">
+    <div class="col-md-6">
+      <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
+    </div>
+    <div class="col-md-4">
+      <select name="caste" class="form-select">
+        <option value="">Filter by caste</option>
+        {% for caste in caste_choices %}
+          <option value="{{ caste }}" {% if caste == selected_caste %}selected{% endif %}>{{ caste }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+
+  <div class="row">
+    {% for divorced in divorced_profiles %}
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow rounded-4 h-100">
+          {% if divorced.image %}
+            <img src="{{ divorced.image.url }}" class="card-img-top rounded-top" alt="{{ divorced.name }}" style="height: 200px; object-fit: cover;">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ divorced.name }}  {{ divorced.caste }}</h5>
+            <p><strong>Email:</strong> {{ divorced.email }}</p>
+            <p><strong>Phone:</strong> {{ divorced.phone }}</p>
+            <p><strong>City:</strong> {{ divorced.city }}, {{ divorced.state }}</p>
+            <p><strong>Gender:</strong> {{ divorced.gender }}</p>
+          </div>
+        </div>
       </div>
+    {% endfor %}
+  </div>
 
     {% else %}
-      <!-- Default Welcome Section -->
-      <h4>Welcome, {{ user.username }}</h4>
+      <!-- Welcome Message -->
+      <h4>Welcome, {{ user.username }}  {{ user.caste }}</h4>
       <p><strong>Email:</strong> {{ user.email }}</p>
       <p><strong>Address:</strong> {{ user.address }}</p>
       <p><strong>City:</strong> {{ user.city }}</p>
@@ -210,3 +344,5 @@
   </div>
 </div>
 {% endblock %}
+
+

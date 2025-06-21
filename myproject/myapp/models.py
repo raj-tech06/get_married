@@ -24,9 +24,10 @@ from django.db import models
 
 class MyUser(models.Model):
     username = models.CharField(max_length=100)
+    caste = models.CharField(max_length=100, default='Unknown')  # or whatever default makes sense
+
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
-
     address = models.TextField(blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, blank=True, null=True)
@@ -46,6 +47,7 @@ from django.db import models
 
 class GirlsProfile(models.Model):
     name = models.CharField(max_length=100)
+    caste = models.CharField(max_length=100, default='Unknown')  # or whatever default makes sense 
     email = models.EmailField()
     phone = models.CharField(max_length=15)
     address = models.TextField()
@@ -59,6 +61,7 @@ class GirlsProfile(models.Model):
 
 class BoysProfile(models.Model):
     name = models.CharField(max_length=100)
+    caste = models.CharField(max_length=100, default='Unknown')  # or whatever default makes sense 
     email = models.EmailField()
     phone = models.CharField(max_length=15)
     address = models.TextField()
@@ -72,6 +75,7 @@ class BoysProfile(models.Model):
 
 class DisabledProfile(models.Model):
     name = models.CharField(max_length=100)
+    caste = models.CharField(max_length=100, default='Unknown')  # or whatever default makes sense
     email = models.EmailField()
     phone = models.CharField(max_length=15)
     address = models.TextField()
@@ -85,6 +89,7 @@ class DisabledProfile(models.Model):
 
 class DivorcedProfile(models.Model):
     name = models.CharField(max_length=100)
+    caste = models.CharField(max_length=100, default='Unknown')  # or whatever default makes sense
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     address = models.TextField(null=True, blank=True)
