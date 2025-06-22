@@ -209,7 +209,11 @@
             {% for girl in girls %}
               <div class="col-md-4">
                 <div class="card h-100 shadow-sm">
+                  {% comment %} <img src="{{ girl.image.url }}" class="card-img-top" alt="{{ girl.name }}"> {% endcomment %}
+                  {% if girl.image %}
                   <img src="{{ girl.image.url }}" class="card-img-top" alt="{{ girl.name }}">
+                  {% endif %}
+
                   <div class="card-body">
                     <h5 class="card-title">{{ girl.name }}</h5>
                     <p class="card-text">{{ girl.city }}, {{ girl.state }}</p>
@@ -230,7 +234,11 @@
             {% for boy in boys %}
               <div class="col-md-4">
                 <div class="card h-100 shadow-sm">
-                  <img src="{{ boy.image.url }}" class="card-img-top" alt="{{ boy.name }}">
+                  {% comment %} <img src="{{ boy.image.url }}" class="card-img-top" alt="{{ boy.name }}"> {% endcomment %}
+                 {% if boy.image %}
+                    <img src="{{ boy.image.url }}" class="card-img-top" alt="{{ boy.name }}">
+                 {% endif %}
+
                   <div class="card-body">
                     <h5 class="card-title">{{ boy.name }}</h5>
                     <p class="card-text">{{ boy.city }}, {{ boy.state }}</p>
@@ -251,7 +259,11 @@
             {% for dis in disabled %}
               <div class="col-md-4">
                 <div class="card h-100 shadow-sm">
-                  <img src="{{ dis.image.url }}" class="card-img-top" alt="{{ dis.name }}">
+                  {% comment %} <img src="{{ dis.image.url }}" class="card-img-top" alt="{{ dis.name }}"> {% endcomment %}
+                  {% if dis.image %}
+                    <img src="{{ dis.image.url }}" class="card-img-top" alt="{{ dis.name }}">
+                  {% endif %}
+
                   <div class="card-body">
                     <h5 class="card-title">{{ dis.name }}</h5>
                     <p class="card-text">{{ dis.city }}, {{ dis.state }}</p>
@@ -272,7 +284,11 @@
             {% for div in divorced %}
               <div class="col-md-4">
                 <div class="card h-100 shadow-sm">
-                  <img src="{{ div.image.url }}" class="card-img-top" alt="{{ div.name }}">
+                  {% comment %} <img src="{{ div.image.url }}" class="card-img-top" alt="{{ div.name }}"> {% endcomment %}
+                  {% if div.image %}
+                    <img src="{{ div.image.url }}" class="card-img-top" alt="{{ div.name }}">
+                  {% endif %}
+
                   <div class="card-body">
                     <h5 class="card-title">{{ div.name }}</h5>
                     <p class="card-text">{{ div.city }}, {{ div.state }}</p>

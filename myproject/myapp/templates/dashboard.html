@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 <div class="d-flex" style="min-height: 100vh; align-items: stretch;">
-
   <!-- Sidebar -->
   <div style="width: 250px; background-color: #f1f1f1; flex-shrink: 0;" class="p-3">
     <div class="text-center mb-3">
@@ -23,10 +22,8 @@
       <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
     </ul>
   </div>
-
   <!-- Main Content -->
   <div class="flex-grow-1 p-4">
-
     {# EDIT PROFILE #}
     {% if show_form %}
       <h4 class="mb-4">Edit Profile</h4>
@@ -82,36 +79,38 @@
       </form>
 
 
-    {# ADD MORE PHOTOS #}
-    {% elif show_add_photo %}
-      <h4 class="mb-4 text-primary">📸 Upload More Photos</h4>
-      <form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data">
+
+{% elif show_add_photo %}
+  <h4 class="mb-4">Upload More Photos</h4>
+  {% if photo_form %}
+    <div class="mt-4 p-3 border rounded bg-light">
+      <h6>Upload a Photo</h6>
+      <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="hidden" name="girl_id" value="{{ user.id }}">
-        <div class="mb-3">
-          <label class="form-label">Choose Image</label>
-          <input type="file" name="image" class="form-control" required>
-        </div>
-        <button type="submit" name="add_photo" class="btn btn-outline-primary">Upload Photo</button>
+        {{ photo_form.image.label_tag }}<br>
+        {{ photo_form.image }}<br><br>
+        <button type="submit" class="btn btn-primary btn-sm">Upload</button>
       </form>
+    </div>
+        <a href="{% url 'user_dashboard' %}" class="btn btn-primary mt-4">← Back to Profile</a>
 
-      <h5 class="mt-5">Your Uploaded Photos</h5>
-      <div class="row">
-        {% for img in user_photos %}
-          <div class="col-md-3 mb-4">
-            <div class="card shadow-sm rounded-3">
-              <img src="{{ img.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;" alt="Uploaded Photo">
-            </div>
-          </div>
-        {% empty %}
-          <p class="text-muted">No additional photos uploaded yet.</p>
-        {% endfor %}
+  {% endif %}
+
+  <hr>
+  <h5 class="mt-4">Your Uploaded Photos</h5>
+  <div class="row">
+    {% for photo in user_photos %}
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-sm rounded-3">
+          <img src="{{ photo.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;" alt="Profile Photo">
+        </div>
       </div>
-      <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-3">← Back to Profile</a>
+    {% empty %}
+      <p class="text-muted">No photos uploaded yet.</p>
+    {% endfor %}
+  </div>
 
-    {# OTHER SECTIONS: Membership, Boys, Girls, Disabled, Divorced #}
 
-    
 {% elif show_membership %}
       <!-- Membership Plans -->
       <h4 class="mb-4">Choose Your Membership</h4>
@@ -149,11 +148,9 @@
       </div>
       <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-4">← Back to Profile</a>
 
-
  <!-- Example for Boys Profile -->
 {% elif show_boys %}
   <h4 class="mt-5 text-primary">Boys Profile</h4>
-
   <!-- Filter/Search Form -->
   <form method="GET" class="row g-3 mb-4">
     <input type="hidden" name="boys" value="1">
@@ -383,7 +380,7 @@
               </ul>
                     <h6 class="text-success">More Photos</h6>
                     <div class="d-flex flex-wrap gap-2">
-                      {% for photo in girl.photos.all %}
+                      {% for photo in disabled.photos.all %}
                         <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
                       {% empty %}
                         <p class="text-muted">No additional photos.</p>
@@ -406,7 +403,8 @@
 
   <!-- Filter/Search Form -->
   <form method="GET" class="row g-3 mb-4">
-    <input type="hidden" name="disabled" value="1">
+  <input type="hidden" name="divorced" value="1">
+
     <div class="col-md-6">
       <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
     </div>
@@ -482,23 +480,39 @@
     </div>
   {% endfor %}
 </div>
-
-
     {% else %}
-      <!-- Welcome Message -->
-      <h4>Welcome, {{ user.username }}  {{ user.caste }}</h4>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>Address:</strong> {{ user.address }}</p>
-      <p><strong>City:</strong> {{ user.city }}</p>
-      <p><strong>State:</strong> {{ user.state }}</p>
-      <p><strong>Gender:</strong> {{ user.gender }}</p>
-    {% endif %}
+<!-- Full Profile Card Layout -->
+<div class="card shadow-lg border-0 rounded-4 p-3" style="max-width: 600px;">
+  <div class="row g-0 align-items-center">
 
+    <!-- Profile Info -->
+    <div class="col-md-8">
+      <div class="card-body">
+        <h4 class="card-title text-primary mb-2 mx-2"><i class="bi bi-person-fill"></i> <strong>{{ user.username }}  {{ user.caste }}</strong></h4>
+        <p class="mb-1"><i class="bi bi-envelope-fill me-2 text-secondary"></i><strong>Email:</strong> {{ user.email }}</p>
+        <p class="mb-1"><i class="bi bi-geo-alt-fill me-2 text-secondary"></i><strong>Address:</strong> {{ user.address }}, {{ user.city }}, {{ user.state }}</p>
+      </div>
+    </div>
   </div>
+</div>
+        <p class="text-muted mt-2">You can edit your profile or upload more photos using the options in the sidebar.</p>
 
+<hr>
+      <h5 class="mt-4">Your Profile Photos</h5>
+      <div class="row">
+        {% for photo in user_photos %}
+          <div class="col-md-3 mb-4">
+            <div class="card shadow-sm rounded-3">
+              <img src="{{ photo.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;" alt="Profile Photo">
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-muted">No photos uploaded yet.</p>
+        {% endfor %}
+      </div>
+
+{% endif %}
+  </div>
   </div>
 </div>
 {% endblock %}
-
-
-

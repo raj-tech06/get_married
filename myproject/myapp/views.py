@@ -247,7 +247,8 @@ def admin_dashboard(request):
 
 # --------------------- USER DASHBOARD ---------------------
 from django.shortcuts import render, redirect
-from .models import MyUser, BoysProfile, GirlsProfile, DisabledProfile, DivorcedProfile
+from .models import MyUser, BoysProfile, GirlsProfile, DisabledProfile, DivorcedProfile, UserPhoto
+from .forms import UserPhotoForm
 
 def user_dashboard(request):
     if 'user_id' not in request.session:
@@ -265,11 +266,12 @@ def user_dashboard(request):
     show_girls = request.GET.get('girls') == '1'
     show_disabled = request.GET.get('disabled') == '1'
     show_divorced = request.GET.get('divorced') == '1'
+    show_add_photo = request.GET.get('add_photo') == '1'
 
-    # ✅ Form submission
-    if request.method == 'POST':
+    # === Handle Profile Update ===
+    if request.method == 'POST' and not show_add_photo:
         user.username = request.POST.get('username')
-        user.caste = request.POST.get('lastname')   # ✅ lastname from form -> caste field
+        user.caste = request.POST.get('lastname')
         user.email = request.POST.get('email')
         user.password = request.POST.get('password')
         user.address = request.POST.get('address')
@@ -281,12 +283,24 @@ def user_dashboard(request):
         user.save()
         return redirect('user_dashboard')
 
+    # === Handle Photo Upload ===
+    photo_form = UserPhotoForm()
+    if request.method == 'POST' and show_add_photo:
+        photo_form = UserPhotoForm(request.POST, request.FILES)
+        if photo_form.is_valid():
+            photo = photo_form.save(commit=False)
+            photo.user = user
+            photo.save()
+            return redirect('user_dashboard')
+
+    # === User Photos ===
+    user_photos = user.photos.all()
+
     # === GIRLS FILTER ===
     girls_profiles = GirlsProfile.objects.all()
     caste_choices_girls = GirlsProfile.objects.values_list('caste', flat=True).distinct()
     search_query_girls = request.GET.get('search', '') if show_girls else ''
     selected_caste_girls = request.GET.get('caste', '') if show_girls else ''
-
     if show_girls:
         if search_query_girls:
             girls_profiles = girls_profiles.filter(name__icontains=search_query_girls) | girls_profiles.filter(caste__icontains=search_query_girls)
@@ -298,7 +312,6 @@ def user_dashboard(request):
     caste_choices_boys = BoysProfile.objects.values_list('caste', flat=True).distinct()
     search_query_boys = request.GET.get('search', '') if show_boys else ''
     selected_caste_boys = request.GET.get('caste', '') if show_boys else ''
-
     if show_boys:
         if search_query_boys:
             boys_profiles = boys_profiles.filter(name__icontains=search_query_boys) | boys_profiles.filter(caste__icontains=search_query_boys)
@@ -310,7 +323,6 @@ def user_dashboard(request):
     caste_choices_disabled = DisabledProfile.objects.values_list('caste', flat=True).distinct()
     search_query_disabled = request.GET.get('search', '') if show_disabled else ''
     selected_caste_disabled = request.GET.get('caste', '') if show_disabled else ''
-
     if show_disabled:
         if search_query_disabled:
             disabled_profiles = disabled_profiles.filter(name__icontains=search_query_disabled) | disabled_profiles.filter(caste__icontains=search_query_disabled)
@@ -322,7 +334,6 @@ def user_dashboard(request):
     caste_choices_divorced = DivorcedProfile.objects.values_list('caste', flat=True).distinct()
     search_query_divorced = request.GET.get('search', '') if show_divorced else ''
     selected_caste_divorced = request.GET.get('caste', '') if show_divorced else ''
-
     if show_divorced:
         if search_query_divorced:
             divorced_profiles = divorced_profiles.filter(name__icontains=search_query_divorced) | divorced_profiles.filter(caste__icontains=search_query_divorced)
@@ -333,10 +344,13 @@ def user_dashboard(request):
         'user': user,
         'show_form': show_form,
         'show_membership': show_membership,
+        'show_add_photo': show_add_photo, 
         'show_boys': show_boys,
         'show_girls': show_girls,
         'show_disabled': show_disabled,
         'show_divorced': show_divorced,
+        'user_photos': user_photos,
+        'photo_form': photo_form if show_add_photo else None,
 
         # Girls
         'girls_profiles': girls_profiles,
@@ -362,6 +376,123 @@ def user_dashboard(request):
         'selected_caste_divorced': selected_caste_divorced,
         'search_query_divorced': search_query_divorced,
     })
+
+# from django.shortcuts import render, redirect
+# from .models import MyUser, BoysProfile, GirlsProfile, DisabledProfile, DivorcedProfile
+
+# def user_dashboard(request):
+#     if 'user_id' not in request.session:
+#         return redirect('login_user')
+
+#     try:
+#         user = MyUser.objects.get(id=request.session['user_id'])
+#     except MyUser.DoesNotExist:
+#         return redirect('login_user')
+
+#     # GET section flags
+#     show_form = request.GET.get('edit') == '1'
+#     show_membership = request.GET.get('membership') == '1'
+#     show_boys = request.GET.get('boys') == '1'
+#     show_girls = request.GET.get('girls') == '1'
+#     show_disabled = request.GET.get('disabled') == '1'
+#     show_divorced = request.GET.get('divorced') == '1'
+
+#     # ✅ Form submission
+#     if request.method == 'POST':
+#         user.username = request.POST.get('username')
+#         user.caste = request.POST.get('lastname')   # ✅ lastname from form -> caste field
+#         user.email = request.POST.get('email')
+#         user.password = request.POST.get('password')
+#         user.address = request.POST.get('address')
+#         user.city = request.POST.get('city')
+#         user.state = request.POST.get('state')
+#         user.gender = request.POST.get('gender')
+#         if 'profile_image' in request.FILES:
+#             user.profile_image = request.FILES['profile_image']
+#         user.save()
+#         return redirect('user_dashboard')
+
+#     # === GIRLS FILTER ===
+#     girls_profiles = GirlsProfile.objects.all()
+#     caste_choices_girls = GirlsProfile.objects.values_list('caste', flat=True).distinct()
+#     search_query_girls = request.GET.get('search', '') if show_girls else ''
+#     selected_caste_girls = request.GET.get('caste', '') if show_girls else ''
+
+#     if show_girls:
+#         if search_query_girls:
+#             girls_profiles = girls_profiles.filter(name__icontains=search_query_girls) | girls_profiles.filter(caste__icontains=search_query_girls)
+#         if selected_caste_girls:
+#             girls_profiles = girls_profiles.filter(caste=selected_caste_girls)
+
+#     # === BOYS FILTER ===
+#     boys_profiles = BoysProfile.objects.all()
+#     caste_choices_boys = BoysProfile.objects.values_list('caste', flat=True).distinct()
+#     search_query_boys = request.GET.get('search', '') if show_boys else ''
+#     selected_caste_boys = request.GET.get('caste', '') if show_boys else ''
+
+#     if show_boys:
+#         if search_query_boys:
+#             boys_profiles = boys_profiles.filter(name__icontains=search_query_boys) | boys_profiles.filter(caste__icontains=search_query_boys)
+#         if selected_caste_boys:
+#             boys_profiles = boys_profiles.filter(caste=selected_caste_boys)
+
+#     # === DISABLED FILTER ===
+#     disabled_profiles = DisabledProfile.objects.all()
+#     caste_choices_disabled = DisabledProfile.objects.values_list('caste', flat=True).distinct()
+#     search_query_disabled = request.GET.get('search', '') if show_disabled else ''
+#     selected_caste_disabled = request.GET.get('caste', '') if show_disabled else ''
+
+#     if show_disabled:
+#         if search_query_disabled:
+#             disabled_profiles = disabled_profiles.filter(name__icontains=search_query_disabled) | disabled_profiles.filter(caste__icontains=search_query_disabled)
+#         if selected_caste_disabled:
+#             disabled_profiles = disabled_profiles.filter(caste=selected_caste_disabled)
+
+#     # === DIVORCED FILTER ===
+#     divorced_profiles = DivorcedProfile.objects.all()
+#     caste_choices_divorced = DivorcedProfile.objects.values_list('caste', flat=True).distinct()
+#     search_query_divorced = request.GET.get('search', '') if show_divorced else ''
+#     selected_caste_divorced = request.GET.get('caste', '') if show_divorced else ''
+
+#     if show_divorced:
+#         if search_query_divorced:
+#             divorced_profiles = divorced_profiles.filter(name__icontains=search_query_divorced) | divorced_profiles.filter(caste__icontains=search_query_divorced)
+#         if selected_caste_divorced:
+#             divorced_profiles = divorced_profiles.filter(caste=selected_caste_divorced)
+
+#     return render(request, 'dashboard.html', {
+#         'user': user,
+#         'show_form': show_form,
+#         'show_membership': show_membership,
+#         'show_boys': show_boys,
+#         'show_girls': show_girls,
+#         'show_disabled': show_disabled,
+#         'show_divorced': show_divorced,
+
+#         # Girls
+#         'girls_profiles': girls_profiles,
+#         'caste_choices': caste_choices_girls,
+#         'selected_caste': selected_caste_girls,
+#         'search_query': search_query_girls,
+
+#         # Boys
+#         'boys_profiles': boys_profiles,
+#         'caste_choices_boys': caste_choices_boys,
+#         'selected_caste_boys': selected_caste_boys,
+#         'search_query_boys': search_query_boys,
+
+#         # Disabled
+#         'disabled_profiles': disabled_profiles,
+#         'caste_choices_disabled': caste_choices_disabled,
+#         'selected_caste_disabled': selected_caste_disabled,
+#         'search_query_disabled': search_query_disabled,
+
+#         # Divorced
+#         'divorced_profiles': divorced_profiles,
+#         'caste_choices_divorced': caste_choices_divorced,
+#         'selected_caste_divorced': selected_caste_divorced,
+#         'search_query_divorced': search_query_divorced,
+#     })
 
 # ------------------------------------------------
 # from django.shortcuts import render, redirect

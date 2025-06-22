@@ -44,6 +44,28 @@ class MyUser(models.Model):
         return self.username
 
 
+
+
+from django.db import models
+from .models import MyUser  # ya jo bhi tumhara custom user model hai
+
+class UserPhoto(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='photos')
+    image = models.ImageField(upload_to='user_photos/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Photo"
+
+
+
+
+
+
+
+
+
+
 from django.db import models
 
 class GirlsProfile(models.Model):
