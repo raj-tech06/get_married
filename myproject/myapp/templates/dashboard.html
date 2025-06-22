@@ -14,6 +14,7 @@
     <hr>
     <ul class="nav flex-column">
       <li class="nav-item mb-2"><a href="?edit=1" class="nav-link text-dark">✏️ Edit Profile</a></li>
+      <li class="nav-item mb-2"><a href="?add_photo=1" class="nav-link text-dark">📸 Add More Photos</a></li>
       <li class="nav-item mb-2"><a href="?membership=1" class="nav-link text-dark">💎 Membership</a></li>
       <li class="nav-item mb-2"><a href="?girls=1" class="nav-link text-dark">👩 Girls Profile</a></li>
       <li class="nav-item mb-2"><a href="?boys=1" class="nav-link text-dark">👦 Boys Profile</a></li>
@@ -26,10 +27,11 @@
   <!-- Main Content -->
   <div class="flex-grow-1 p-4">
 
+    {# EDIT PROFILE #}
     {% if show_form %}
       <h4 class="mb-4">Edit Profile</h4>
       <form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+     {% csrf_token %}
         <div class="mb-3">
           <label for="username" class="form-label">Full Name</label>
           <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
@@ -79,6 +81,37 @@
         <button type="submit" class="btn btn-success">Update Profile</button>
       </form>
 
+
+    {# ADD MORE PHOTOS #}
+    {% elif show_add_photo %}
+      <h4 class="mb-4 text-primary">📸 Upload More Photos</h4>
+      <form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="girl_id" value="{{ user.id }}">
+        <div class="mb-3">
+          <label class="form-label">Choose Image</label>
+          <input type="file" name="image" class="form-control" required>
+        </div>
+        <button type="submit" name="add_photo" class="btn btn-outline-primary">Upload Photo</button>
+      </form>
+
+      <h5 class="mt-5">Your Uploaded Photos</h5>
+      <div class="row">
+        {% for img in user_photos %}
+          <div class="col-md-3 mb-4">
+            <div class="card shadow-sm rounded-3">
+              <img src="{{ img.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;" alt="Uploaded Photo">
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-muted">No additional photos uploaded yet.</p>
+        {% endfor %}
+      </div>
+      <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-3">← Back to Profile</a>
+
+    {# OTHER SECTIONS: Membership, Boys, Girls, Disabled, Divorced #}
+
+    
 {% elif show_membership %}
       <!-- Membership Plans -->
       <h4 class="mb-4">Choose Your Membership</h4>
@@ -117,7 +150,7 @@
       <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-4">← Back to Profile</a>
 
 
-    <!-- Example for Boys Profile -->
+ <!-- Example for Boys Profile -->
 {% elif show_boys %}
   <h4 class="mt-5 text-primary">Boys Profile</h4>
 
@@ -141,31 +174,70 @@
   </form>
 
   <div class="row">
-    {% for boy in boys_profiles %}
-      <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow rounded-4 h-100">
-          {% if boy.image %}
-            <img src="{{ boy.image.url }}" class="card-img-top rounded-top" alt="{{ boy.name }}" style="height: 200px; object-fit: cover;">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title fw-bold">{{ boy.name }}  {{ boy.caste }}</h5>
-            <p><strong>Email:</strong> {{ boy.email }}</p>
-            <p><strong>Phone:</strong> {{ boy.phone }}</p>
-            <p><strong>City:</strong> {{ boy.city }}, {{ boy.state }}</p>
-            <p><strong>Gender:</strong> {{ boy.gender }}</p>
+  {% for boy in boys_profiles %}
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow rounded-4 h-100">
+        {% if boy.image %}
+          <img src="{{ boy.image.url }}" class="card-img-top rounded-top" alt="{{ boy.name }}" style="height: 200px; object-fit: cover;">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{ boy.name }} {{ boy.caste }}</h5>
+          <p><strong>Email:</strong> {{ boy.email }}</p>
+          <p><strong>Phone:</strong> {{ boy.phone }}</p>
+          <p><strong>City:</strong> {{ boy.city }}, {{ boy.state }}</p>
+          <p><strong>Gender:</strong> {{ boy.gender }}</p>
+          <button class="btn btn-outline-primary mt-2 w-100" data-bs-toggle="modal" data-bs-target="#boyModal{{ boy.id }}">More Details</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for each boy -->
+    <div class="modal fade" id="boyModal{{ boy.id }}" tabindex="-1" aria-labelledby="boyModalLabel{{ boy.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-primary rounded-4 shadow">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="boyModalLabel{{ boy.id }}">{{ boy.name }}'s Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-5 text-center">
+              {% if boy.image %}
+                <img src="{{ boy.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ boy.name }}">
+              {% endif %}
+            </div>
+            <div class="col-md-7">
+              <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item"><strong>Name:</strong> {{ boy.name }}</li>
+                <li class="list-group-item"><strong>Caste:</strong> {{ boy.caste }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ boy.email }}</li>
+                <li class="list-group-item"><strong>Phone:</strong> {{ boy.phone }}</li>
+                <li class="list-group-item"><strong>City:</strong> {{ boy.city }}</li>
+                <li class="list-group-item"><strong>State:</strong> {{ boy.state }}</li>
+                <li class="list-group-item"><strong>Gender:</strong> {{ boy.gender }}</li>
+              </ul>
+                    <h6 class="text-success">More Photos</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                      {% for photo in boy.photos.all %}
+                        <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+                      {% empty %}
+                        <p class="text-muted">No additional photos.</p>
+                      {% endfor %}
+                    </div>              
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
+</div>
 
       </div>
-
-
+      
     {% elif show_girls %}
       <h4 class="mt-3 text-success">Girls Profile</h4>
-
-      <!-- Filter/Search Form -->
       <form method="GET" class="row g-3 mb-4">
         <input type="hidden" name="girls" value="1">
         <div class="col-md-6">
@@ -179,18 +251,15 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-md-2">
-          <button class="btn btn-primary w-100">Search</button>
-        </div>
+        <div class="col-md-2"><button class="btn btn-primary w-100">Search</button></div>
       </form>
 
-      <!-- Girls Cards -->
       <div class="row">
         {% for girl in girls_profiles %}
           <div class="col-md-4 mb-4">
             <div class="card border-0 shadow rounded-4 h-100">
               {% if girl.image %}
-                <img src="{{ girl.image.url }}" class="card-img-top rounded-top" alt="{{ girl.name }}" style="height: 200px; object-fit: cover;">
+                <img src="{{ girl.image.url }}" class="card-img-top rounded-top" style="height:200px; object-fit:cover;" alt="{{ girl.name }}">
               {% endif %}
               <div class="card-body">
                 <h5 class="card-title fw-bold">{{ girl.name }}  {{ girl.caste }}</h5>
@@ -198,33 +267,54 @@
                 <p><strong>Phone:</strong> {{ girl.phone }}</p>
                 <p><strong>City:</strong> {{ girl.city }}, {{ girl.state }}</p>
                 <p><strong>Gender:</strong> {{ girl.gender }}</p>
+                <button class="btn btn-outline-success mt-2 w-100" data-bs-toggle="modal" data-bs-target="#girlModal{{ girl.id }}">More Details</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal for each girl -->
+          <div class="modal fade" id="girlModal{{ girl.id }}" tabindex="-1" aria-labelledby="girlModalLabel{{ girl.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-content border-success rounded-4 shadow">
+                <div class="modal-header bg-success text-white">
+                  <h5 class="modal-title" id="girlModalLabel{{ girl.id }}">{{ girl.name }}'s Profile</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row">
+                  <div class="col-md-5 text-center">
+                    {% if girl.image %}
+                      <img src="{{ girl.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ girl.name }}">
+                    {% endif %}
+                  </div>
+                  <div class="col-md-7">
+                    <ul class="list-group list-group-flush mb-3">
+                      <li class="list-group-item"><strong>Name:</strong> {{ girl.name }}</li>
+                      <li class="list-group-item"><strong>Caste:</strong> {{ girl.caste }}</li>
+                      <li class="list-group-item"><strong>Email:</strong> {{ girl.email }}</li>
+                      <li class="list-group-item"><strong>Phone:</strong> {{ girl.phone }}</li>
+                      <li class="list-group-item"><strong>City:</strong> {{ girl.city }}</li>
+                      <li class="list-group-item"><strong>State:</strong> {{ girl.state }}</li>
+                      <li class="list-group-item"><strong>Gender:</strong> {{ girl.gender }}</li>
+                    </ul>
+                    <h6 class="text-success">More Photos</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                      {% for photo in girl.photos.all %}
+                        <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+                      {% empty %}
+                        <p class="text-muted">No additional photos.</p>
+                      {% endfor %}
+                    </div>
+                    
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
               </div>
             </div>
           </div>
         {% endfor %}
       </div>
-
-
-    {% comment %} {% elif show_disabled %}
-      <h4 class="mt-5 text-danger">Disabled Profile</h4>
-      <div class="row">
-        {% for disabled in disabled_profiles %}
-          <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow rounded-4 h-100">
-              {% if disabled.image %}
-                <img src="{{ disabled.image.url }}" class="card-img-top rounded-top" alt="{{ disabled.name }}" style="height: 200px; object-fit: cover;">
-              {% endif %}
-              <div class="card-body">
-                <h5 class="card-title fw-bold">{{ disabled.name }}</h5>
-                <p><strong>Email:</strong> {{ disabled.email }}</p>
-                <p><strong>Phone:</strong> {{ disabled.phone }}</p>
-                <p><strong>City:</strong> {{ disabled.city }}, {{ disabled.state }}</p>
-                <p><strong>Gender:</strong> {{ disabled.gender }}</p>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div> {% endcomment %}
 
       <!-- Example for Disabled Profile -->
 {% elif show_disabled %}
@@ -250,45 +340,66 @@
   </form>
 
   <div class="row">
-    {% for disabled in disabled_profiles %}
-      <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow rounded-4 h-100">
-          {% if disabled.image %}
-            <img src="{{ disabled.image.url }}" class="card-img-top rounded-top" alt="{{ disabled.name }}" style="height: 200px; object-fit: cover;">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title fw-bold">{{ disabled.name }}  {{ disabled.caste }}</h5>
-            <p><strong>Email:</strong> {{ disabled.email }}</p>
-            <p><strong>Phone:</strong> {{ disabled.phone }}</p>
-            <p><strong>City:</strong> {{ disabled.city }}, {{ disabled.state }}</p>
-            <p><strong>Gender:</strong> {{ disabled.gender }}</p>
+  {% for disabled in disabled_profiles %}
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow rounded-4 h-100">
+        {% if disabled.image %}
+          <img src="{{ disabled.image.url }}" class="card-img-top rounded-top" style="height: 200px; object-fit: cover;" alt="{{ disabled.name }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{ disabled.name }} {{ disabled.caste }}</h5>
+          <p><strong>Email:</strong> {{ disabled.email }}</p>
+          <p><strong>Phone:</strong> {{ disabled.phone }}</p>
+          <p><strong>City:</strong> {{ disabled.city }}, {{ disabled.state }}</p>
+          <p><strong>Gender:</strong> {{ disabled.gender }}</p>
+          <button class="btn btn-outline-info mt-2 w-100" data-bs-toggle="modal" data-bs-target="#disabledModal{{ disabled.id }}">More Details</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="disabledModal{{ disabled.id }}" tabindex="-1" aria-labelledby="disabledModalLabel{{ disabled.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-info rounded-4 shadow">
+          <div class="modal-header bg-info text-white">
+            <h5 class="modal-title" id="disabledModalLabel{{ disabled.id }}">{{ disabled.name }}'s Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-5 text-center">
+              {% if disabled.image %}
+                <img src="{{ disabled.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ disabled.name }}">
+              {% endif %}
+            </div>
+            <div class="col-md-7">
+              <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item"><strong>Name:</strong> {{ disabled.name }}</li>
+                <li class="list-group-item"><strong>Caste:</strong> {{ disabled.caste }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ disabled.email }}</li>
+                <li class="list-group-item"><strong>Phone:</strong> {{ disabled.phone }}</li>
+                <li class="list-group-item"><strong>City:</strong> {{ disabled.city }}</li>
+                <li class="list-group-item"><strong>State:</strong> {{ disabled.state }}</li>
+                <li class="list-group-item"><strong>Gender:</strong> {{ disabled.gender }}</li>
+              </ul>
+                    <h6 class="text-success">More Photos</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                      {% for photo in girl.photos.all %}
+                        <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+                      {% empty %}
+                        <p class="text-muted">No additional photos.</p>
+                      {% endfor %}
+                    </div>              
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
+</div>
 
-{% comment %} 
-    {% elif show_divorced %}
-      <h4 class="mt-5 text-warning">Divorced Profile</h4>
-      <div class="row">
-        {% for divorced in divorced_profiles %}
-          <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow rounded-4 h-100">
-              {% if divorced.image %}
-                <img src="{{ divorced.image.url }}" class="card-img-top rounded-top" alt="{{ divorced.name }}" style="height: 200px; object-fit: cover;">
-              {% endif %}
-              <div class="card-body">
-                <h5 class="card-title fw-bold">{{ divorced.name }}</h5>
-                <p><strong>Email:</strong> {{ divorced.email }}</p>
-                <p><strong>Phone:</strong> {{ divorced.phone }}</p>
-                <p><strong>City:</strong> {{ divorced.city }}, {{ d.state }}</p>
-                <p><strong>Gender:</strong> {{ divorced.gender }}</p>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div> {% endcomment %}
 <!-- Example for Disabled Profile -->
 {% elif show_divorced %}
   <h4 class="mt-5 text-primary">Divorced Profile</h4>
@@ -313,23 +424,65 @@
   </form>
 
   <div class="row">
-    {% for divorced in divorced_profiles %}
-      <div class="col-md-4 mb-4">
-        <div class="card border-0 shadow rounded-4 h-100">
-          {% if divorced.image %}
-            <img src="{{ divorced.image.url }}" class="card-img-top rounded-top" alt="{{ divorced.name }}" style="height: 200px; object-fit: cover;">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title fw-bold">{{ divorced.name }}  {{ divorced.caste }}</h5>
-            <p><strong>Email:</strong> {{ divorced.email }}</p>
-            <p><strong>Phone:</strong> {{ divorced.phone }}</p>
-            <p><strong>City:</strong> {{ divorced.city }}, {{ divorced.state }}</p>
-            <p><strong>Gender:</strong> {{ divorced.gender }}</p>
+  {% for divorced in divorced_profiles %}
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow rounded-4 h-100">
+        {% if divorced.image %}
+          <img src="{{ divorced.image.url }}" class="card-img-top rounded-top" style="height: 200px; object-fit: cover;" alt="{{ divorced.name }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{ divorced.name }} {{ divorced.caste }}</h5>
+          <p><strong>Email:</strong> {{ divorced.email }}</p>
+          <p><strong>Phone:</strong> {{ divorced.phone }}</p>
+          <p><strong>City:</strong> {{ divorced.city }}, {{ divorced.state }}</p>
+          <p><strong>Gender:</strong> {{ divorced.gender }}</p>
+          <button class="btn btn-outline-danger mt-2 w-100" data-bs-toggle="modal" data-bs-target="#divorcedModal{{ divorced.id }}">More Details</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="divorcedModal{{ divorced.id }}" tabindex="-1" aria-labelledby="divorcedModalLabel{{ divorced.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-danger rounded-4 shadow">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="divorcedModalLabel{{ divorced.id }}">{{ divorced.name }}'s Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-5 text-center">
+              {% if divorced.image %}
+                <img src="{{ divorced.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ divorced.name }}">
+              {% endif %}
+            </div>
+            <div class="col-md-7">
+              <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item"><strong>Name:</strong> {{ divorced.name }}</li>
+                <li class="list-group-item"><strong>Caste:</strong> {{ divorced.caste }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ divorced.email }}</li>
+                <li class="list-group-item"><strong>Phone:</strong> {{ divorced.phone }}</li>
+                <li class="list-group-item"><strong>City:</strong> {{ divorced.city }}</li>
+                <li class="list-group-item"><strong>State:</strong> {{ divorced.state }}</li>
+                <li class="list-group-item"><strong>Gender:</strong> {{ divorced.gender }}</li>
+              </ul>
+              <h6 class="text-success">More Photos</h6>
+              <div class="d-flex flex-wrap gap-2">
+                {% for photo in divorced.photos.all %}
+                  <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+                {% empty %}
+                  <p class="text-muted">No additional photos.</p>
+                {% endfor %}
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
+</div>
+
 
     {% else %}
       <!-- Welcome Message -->
@@ -342,7 +495,10 @@
     {% endif %}
 
   </div>
+
+  </div>
 </div>
 {% endblock %}
+
 
 
