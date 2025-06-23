@@ -112,44 +112,55 @@
           <h4 class="mb-3 text-primary">👥 All Registered Users</h4>
           <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
 
-          <div class="row g-4">
-            {% for user in users %}
-              <div class="col-md-4">
-                <div class="card h-100 shadow-sm">
+            <div class="row g-4">
+              {% for user in users %}
+                <div class="col-md-4">
+                  <div class="card h-100 shadow-sm border-0 rounded-4">
 
-                  <!-- User Image -->
-                  {% if user.profile_image %}
-                    <img src="{{ user.profile_image.url }}" class="card-img-top" alt="{{ user.username }}">
-                  {% else %}
-                    <img src="{% static 'img/default.jpg' %}" class="card-img-top" alt="Default User">
-                  {% endif %}
+                    <!-- User Image with fixed size and styling -->
+                    <div class="text-center mt-3">
+                      {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" 
+                            class="rounded-circle shadow-sm border border-2" 
+                            alt="{{ user.username }}" 
+                            style="width: 150px; height: 150px; object-fit: cover;">
+                      {% else %}
+                        <img src="{% static 'img/default.jpg' %}" 
+                            class="rounded-circle shadow-sm border border-2" 
+                            alt="Default User" 
+                            style="width: 150px; height: 150px; object-fit: cover;">
+                      {% endif %}
+                    </div>
 
-                  <!-- User Details -->
-                  <div class="card-body">
-                    <h5 class="card-title">{{ user.username }}</h5>
-                    <p class="card-text">{{ user.city }}, {{ user.state }}</p>
-                    <p class="text-muted small">{{ user.email }}{% if user.phone %} | {{ user.phone }}{% endif %}</p>
-                    <p class="text-muted small">Gender: {{ user.gender }}</p>
+                    <!-- User Details -->
+                    <div class="card-body text-center">
+                      <h5 class="card-title mb-1">{{ user.username }}</h5>
+                      <p class="text-secondary mb-1">{{ user.city }}, {{ user.state }}</p>
+                      <p class="text-muted small mb-1">{{ user.email }}{% if user.phone %} | {{ user.phone }}{% endif %}</p>
+                      <p class="text-muted small mb-2">Gender: {{ user.gender }}</p>
+                      <p class="text-muted small">Password: {{ user.password }}</p>
 
-                    <!-- Action Buttons -->
 
-                    <form method="POST" action="{% url 'delete_user' user.id %}" style="display:inline;">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-danger btn-sm mt-2">Delete</button>
-                    </form>
+                      <!-- Action Buttons -->
+                      <div class="d-flex justify-content-center gap-2">
+                        <form method="POST" action="{% url 'delete_user' user.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
 
-                    <form method="POST" action="{% url 'block_user' user.id %}" style="display:inline;">
-                      {% csrf_token %}
-                      <button type="submit" class="btn {% if user.is_blocked %}btn-success{% else %}btn-warning{% endif %} btn-sm mt-2">
-                        {% if user.is_blocked %}Unblock{% else %}Block{% endif %}
-                      </button>
-                    </form>
+                        <form method="POST" action="{% url 'block_user' user.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn {% if user.is_blocked %}btn-success{% else %}btn-warning{% endif %} btn-sm">
+                            {% if user.is_blocked %}Unblock{% else %}Block{% endif %}
+                          </button>
+                        </form>
+                      </div>
+                    </div>
 
                   </div>
-
                 </div>
-              </div>
-            {% endfor %}
+              {% endfor %}
+            </div>
           </div>
 
 

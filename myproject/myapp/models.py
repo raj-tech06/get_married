@@ -26,7 +26,7 @@ class MyUser(models.Model):
     username = models.CharField(max_length=100)
     # caste = models.CharField(max_length=100, default='Unknown')  # or whatever default makes sense
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
-
+    phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     address = models.TextField(blank=True, null=True)
@@ -34,6 +34,7 @@ class MyUser(models.Model):
     state = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female')], blank=True, null=True)
     profile_image = models.ImageField(upload_to='profiles/', default='profiles/default.png', blank=True, null=True)
+    category = models.CharField(max_length=20, choices=[('girls', 'Girls'), ('boys', 'Boys'), ('disabled', 'Disabled'), ('divorced', 'Divorced')], null=True, blank=True)
 
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this
 
@@ -72,9 +73,8 @@ class GirlsProfile(models.Model):
     name = models.CharField(max_length=100)
     # caste = models.CharField(max_length=100, default='Unknown')  # or whatever default makes sense 
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
-
     email = models.EmailField()
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
     address = models.TextField()
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
@@ -96,7 +96,7 @@ class BoysProfile(models.Model):
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
 
     email = models.EmailField()
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
     address = models.TextField()
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
@@ -117,7 +117,7 @@ class DisabledProfile(models.Model):
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
 
     email = models.EmailField()
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
     address = models.TextField()
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
@@ -137,7 +137,7 @@ class DivorcedProfile(models.Model):
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
 
     email = models.EmailField()
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=10, blank=True, null=True)
     address = models.TextField(null=True, blank=True)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)

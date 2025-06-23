@@ -267,21 +267,56 @@ def user_dashboard(request):
     show_disabled = request.GET.get('disabled') == '1'
     show_divorced = request.GET.get('divorced') == '1'
     show_add_photo = request.GET.get('add_photo') == '1'
-
-    # === Handle Profile Update ===
+        
     if request.method == 'POST' and not show_add_photo:
+        category = request.POST.get('category')  # ✅ Get selected category from form
+
+        # --- Update User Model ---
         user.username = request.POST.get('username')
         user.caste = request.POST.get('lastname')
+        user.phone = request.POST.get('phone')
         user.email = request.POST.get('email')
         user.password = request.POST.get('password')
         user.address = request.POST.get('address')
         user.city = request.POST.get('city')
         user.state = request.POST.get('state')
         user.gender = request.POST.get('gender')
+        user.category = category  # ✅ Save chosen category
+
         if 'profile_image' in request.FILES:
             user.profile_image = request.FILES['profile_image']
         user.save()
+
+        # --- First: Delete from all other category models ---
+        GirlsProfile.objects.filter(email=user.email).delete()
+        BoysProfile.objects.filter(email=user.email).delete()
+        DisabledProfile.objects.filter(email=user.email).delete()
+        DivorcedProfile.objects.filter(email=user.email).delete()
+
+        # --- Then: Save in selected category ---
+        profile_data = {
+            'name': user.username,
+            'caste': user.caste,
+            'email': user.email,
+            'phone': user.phone,
+            'address': user.address,
+            'city': user.city,
+            'state': user.state,
+            'gender': user.gender,
+            'image': user.profile_image
+        }
+
+        if category == 'girls':
+            GirlsProfile.objects.create(**profile_data)
+        elif category == 'boys':
+            BoysProfile.objects.create(**profile_data)
+        elif category == 'disabled':
+            DisabledProfile.objects.create(**profile_data)
+        elif category == 'divorced':
+            DivorcedProfile.objects.create(**profile_data)
+
         return redirect('user_dashboard')
+
 
     # === Handle Photo Upload ===
     photo_form = UserPhotoForm()
@@ -328,7 +363,6 @@ def user_dashboard(request):
             disabled_profiles = disabled_profiles.filter(name__icontains=search_query_disabled) | disabled_profiles.filter(caste__icontains=search_query_disabled)
         if selected_caste_disabled:
             disabled_profiles = disabled_profiles.filter(caste=selected_caste_disabled)
-
     # === DIVORCED FILTER ===
     divorced_profiles = DivorcedProfile.objects.all()
     caste_choices_divorced = DivorcedProfile.objects.values_list('caste', flat=True).distinct()
@@ -340,6 +374,24 @@ def user_dashboard(request):
         if selected_caste_divorced:
             divorced_profiles = divorced_profiles.filter(caste=selected_caste_divorced)
 
+    # ✅ Add this: Match photos by user email
+    user_photos_dict = {}
+    for u in MyUser.objects.all():
+        user_photos_dict[u.email] = u.photos.all()
+
+    for boy in boys_profiles:
+        boy.extra_photos = UserPhoto.objects.filter(user__email=boy.email).all()
+
+    for girl in girls_profiles:
+        girl.extra_photos = UserPhoto.objects.filter(user__email=girl.email).all()
+
+    for disabled in disabled_profiles:
+        disabled.extra_photos = UserPhoto.objects.filter(user__email=disabled.email).all()
+
+    for divorced in divorced_profiles:
+        divorced.extra_photos = UserPhoto.objects.filter(user__email=divorced.email).all()
+
+
     return render(request, 'dashboard.html', {
         'user': user,
         'show_form': show_form,
@@ -350,6 +402,8 @@ def user_dashboard(request):
         'show_disabled': show_disabled,
         'show_divorced': show_divorced,
         'user_photos': user_photos,
+        'users': MyUser.objects.all(),
+        'user_photos_dict': user_photos_dict,
         'photo_form': photo_form if show_add_photo else None,
 
         # Girls
