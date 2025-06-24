@@ -181,8 +181,12 @@ def logout_view(request):
 
 #     return render(request, 'admin_dashboard.html', context)
 
+
+# ----------ADMIN DASHBOARD og--------------------
 from django.shortcuts import render, redirect
-from .models import GirlsProfile, BoysProfile, DisabledProfile, DivorcedProfile, MyUser  # ✅ MyUser import
+from .models import GirlsProfile, BoysProfile, DisabledProfile, DivorcedProfile, MyUser, ProfilePermission
+from django.contrib import messages
+from itertools import chain
 
 def admin_dashboard(request):
     if request.session.get('user_email') != 'admin@gmail.com':
@@ -190,10 +194,29 @@ def admin_dashboard(request):
 
     user_name = request.session.get('user_name')
 
-    # ✅ Handle form submission
-    if request.method == 'POST':
+    # ✅ Handle form: Assign profiles to user
+    if request.method == 'POST' and 'assign_profiles' in request.POST:
+        target_email = request.POST.get('target_user_email')
+        category = request.POST.get('category')
+        selected_emails = request.POST.getlist('profile_emails')
+
+        try:
+            target_user = MyUser.objects.get(email=target_email)
+        except MyUser.DoesNotExist:
+            messages.error(request, "User not found.")
+        else:
+            # Remove old ones first for the same category
+            ProfilePermission.objects.filter(user=target_user, category=category).delete()
+
+            for email in selected_emails:
+                ProfilePermission.objects.create(user=target_user, category=category, profile_email=email)
+
+            messages.success(request, "Profiles assigned successfully.")
+
+    # ✅ Handle form: Add new profile
+    elif request.method == 'POST':
         name = request.POST.get('name')
-        caste = request.POST.get('lastname')  # ✅ Map lastname input to caste field
+        caste = request.POST.get('lastname')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         address = request.POST.get('address')
@@ -205,7 +228,7 @@ def admin_dashboard(request):
 
         profile_data = {
             'name': name,
-            'caste': caste,  # ✅ Saving into caste field
+            'caste': caste,
             'email': email,
             'phone': phone,
             'address': address,
@@ -226,12 +249,43 @@ def admin_dashboard(request):
 
         return redirect('admin_dashboard')
 
+    # 🔁 Combine all profiles
+    all_profiles = list(chain(
+        BoysProfile.objects.all(),
+        GirlsProfile.objects.all(),
+        DisabledProfile.objects.all(),
+        DivorcedProfile.objects.all()
+    ))
+
+    # ✅ Handle filters (GET)
+    user_search = request.GET.get('user_search', '')
+    profile_email_search = request.GET.get('profile_email_search', '')
+    caste_search = request.GET.get('caste_search', '').lower()
+
+    # 🔍 Filter users
+    filtered_users = MyUser.objects.all()
+    if user_search:
+        filtered_users = filtered_users.filter(email__icontains=user_search)
+
+    # 🔍 Filter profiles
+    if profile_email_search:
+        filtered_profiles = [p for p in all_profiles if profile_email_search.lower() in p.email.lower()]
+    elif caste_search:
+        filtered_profiles = [p for p in all_profiles if caste_search in p.caste.lower()]
+    else:
+        filtered_profiles = all_profiles
+
+    # View type filters
     view_type = request.GET.get('view', '')
+
     context = {
         'user_name': user_name,
+        'users': MyUser.objects.all(),
+        'all_profiles': all_profiles,
+        'filtered_users': filtered_users,
+        'filtered_profiles': filtered_profiles,
     }
 
-    # ✅ Show data based on filter
     if view_type == 'girls':
         context['girls'] = GirlsProfile.objects.all()
     elif view_type == 'boys':
@@ -241,13 +295,151 @@ def admin_dashboard(request):
     elif view_type == 'divorced':
         context['divorced'] = DivorcedProfile.objects.all()
     elif view_type == 'users':
-        context['users'] = MyUser.objects.all()  # ✅ Show registered users
+        context['users'] = MyUser.objects.all()
 
     return render(request, 'admin_dashboard.html', context)
 
+# from django.shortcuts import render, redirect
+# from .models import GirlsProfile, BoysProfile, DisabledProfile, DivorcedProfile, MyUser, ProfilePermission
+# from django.contrib import messages
+# from itertools import chain
+
+
+
+# def admin_dashboard(request):
+#     if request.session.get('user_email') != 'admin@gmail.com':
+#         return redirect('user_dashboard')
+
+#     user_name = request.session.get('user_name')
+
+#     # ✅ Handle form: Assign profiles to user
+#     if request.method == 'POST' and 'assign_profiles' in request.POST:
+#         target_email = request.POST.get('target_user_email')
+#         category = request.POST.get('category')
+#         selected_emails = request.POST.getlist('profile_emails')
+
+#         try:
+#             target_user = MyUser.objects.get(email=target_email)
+#         except MyUser.DoesNotExist:
+#             messages.error(request, "User not found.")
+#         else:
+#             # Remove old ones first for the same category
+#             ProfilePermission.objects.filter(user=target_user, category=category).delete()
+
+#             for email in selected_emails:
+#                 ProfilePermission.objects.create(user=target_user, category=category, profile_email=email)
+
+#             caste_search = request.GET.get('caste_search', '').lower()
+
+#         if profile_email_search:
+#             filtered_profiles = [p for p in all_profiles if profile_email_search.lower() in p.email.lower()]
+#         elif caste_search:
+#             filtered_profiles = [p for p in all_profiles if caste_search in p.caste.lower()]
+#         else:
+#             filtered_profiles = all_profiles
+            
+
+#             messages.success(request, "Profiles assigned successfully.")
+
+#     # ✅ Handle form: Add new profile (girls/boys/disabled/divorced)
+#     elif request.method == 'POST':
+#         name = request.POST.get('name')
+#         caste = request.POST.get('lastname')
+#         email = request.POST.get('email')
+#         phone = request.POST.get('phone')
+#         address = request.POST.get('address')
+#         city = request.POST.get('city')
+#         state = request.POST.get('state')
+#         gender = request.POST.get('gender')
+#         category = request.POST.get('category')
+#         image = request.FILES.get('image')
+
+#         profile_data = {
+#             'name': name,
+#             'caste': caste,
+#             'email': email,
+#             'phone': phone,
+#             'address': address,
+#             'city': city,
+#             'state': state,
+#             'gender': gender,
+#             'image': image,
+#         }
+
+#         if category == 'girls':
+#             GirlsProfile.objects.create(**profile_data)
+#         elif category == 'boys':
+#             BoysProfile.objects.create(**profile_data)
+#         elif category == 'disabled':
+#             DisabledProfile.objects.create(**profile_data)
+#         elif category == 'divorced':
+#             DivorcedProfile.objects.create(**profile_data)
+
+#         return redirect('admin_dashboard')
+
+#     view_type = request.GET.get('view', '')
+
+#     # 🔁 Combine all profiles (for selection dropdown)
+#     all_profiles = list(chain(
+#         BoysProfile.objects.all(),
+#         GirlsProfile.objects.all(),
+#         DisabledProfile.objects.all(),
+#         DivorcedProfile.objects.all()
+#     ))
+
+#     context = {
+#         'user_name': user_name,
+#         'users': MyUser.objects.all(),
+#         'all_profiles': all_profiles,
+#     }
+
+#     # ✅ Show data based on filter
+#     if view_type == 'girls':
+#         context['girls'] = GirlsProfile.objects.all()
+#     elif view_type == 'boys':
+#         context['boys'] = BoysProfile.objects.all()
+#     elif view_type == 'disabled':
+#         context['disabled'] = DisabledProfile.objects.all()
+#     elif view_type == 'divorced':
+#         context['divorced'] = DivorcedProfile.objects.all()
+#     elif view_type == 'users':
+#         context['users'] = MyUser.objects.all()
+
+
+#   # search assign
+#     user_search = request.GET.get('user_search', '')
+#     profile_email_search = request.GET.get('profile_email_search', '')
+
+#     # Filter registered users
+#     filtered_users = MyUser.objects.all()
+#     if user_search:
+#         filtered_users = filtered_users.filter(email__icontains=user_search)
+
+#     # Filter all profiles (any category)
+#     # from itertools import chain
+#     all_profiles = list(chain(
+#         GirlsProfile.objects.all(),
+#         BoysProfile.objects.all(),
+#         DisabledProfile.objects.all(),
+#         DivorcedProfile.objects.all()
+#     ))
+#     if profile_email_search:
+#         filtered_profiles = [p for p in all_profiles if profile_email_search.lower() in p.email.lower()]
+#     else:
+#         filtered_profiles = all_profiles
+
+#     # Then add to context
+#     context['filtered_users'] = filtered_users
+#     context['filtered_profiles'] = filtered_profiles
+        
+
+
+#     return render(request, 'admin_dashboard.html', context)
+
 # --------------------- USER DASHBOARD ---------------------
 from django.shortcuts import render, redirect
-from .models import MyUser, BoysProfile, GirlsProfile, DisabledProfile, DivorcedProfile, UserPhoto
+from .models import MyUser, BoysProfile, GirlsProfile, DisabledProfile, DivorcedProfile, UserPhoto,ProfilePermission
+
 from .forms import UserPhotoForm
 
 def user_dashboard(request):
@@ -331,8 +523,15 @@ def user_dashboard(request):
     # === User Photos ===
     user_photos = user.photos.all()
 
+    # 🧠 Allowed profile emails from ProfilePermission
+    allowed_boy_emails = ProfilePermission.objects.filter(user=user, category='boys').values_list('profile_email', flat=True)
+    allowed_girl_emails = ProfilePermission.objects.filter(user=user, category='girls').values_list('profile_email', flat=True)
+    allowed_disabled_emails = ProfilePermission.objects.filter(user=user, category='disabled').values_list('profile_email', flat=True)
+    allowed_divorced_emails = ProfilePermission.objects.filter(user=user, category='divorced').values_list('profile_email', flat=True)
+
+
     # === GIRLS FILTER ===
-    girls_profiles = GirlsProfile.objects.all()
+    girls_profiles = GirlsProfile.objects.filter(email__in=allowed_girl_emails)
     caste_choices_girls = GirlsProfile.objects.values_list('caste', flat=True).distinct()
     search_query_girls = request.GET.get('search', '') if show_girls else ''
     selected_caste_girls = request.GET.get('caste', '') if show_girls else ''
@@ -343,7 +542,7 @@ def user_dashboard(request):
             girls_profiles = girls_profiles.filter(caste=selected_caste_girls)
 
     # === BOYS FILTER ===
-    boys_profiles = BoysProfile.objects.all()
+    boys_profiles = BoysProfile.objects.filter(email__in=allowed_boy_emails)
     caste_choices_boys = BoysProfile.objects.values_list('caste', flat=True).distinct()
     search_query_boys = request.GET.get('search', '') if show_boys else ''
     selected_caste_boys = request.GET.get('caste', '') if show_boys else ''
@@ -354,7 +553,8 @@ def user_dashboard(request):
             boys_profiles = boys_profiles.filter(caste=selected_caste_boys)
 
     # === DISABLED FILTER ===
-    disabled_profiles = DisabledProfile.objects.all()
+    disabled_profiles = DisabledProfile.objects.filter(email__in=allowed_disabled_emails)
+
     caste_choices_disabled = DisabledProfile.objects.values_list('caste', flat=True).distinct()
     search_query_disabled = request.GET.get('search', '') if show_disabled else ''
     selected_caste_disabled = request.GET.get('caste', '') if show_disabled else ''
@@ -364,7 +564,8 @@ def user_dashboard(request):
         if selected_caste_disabled:
             disabled_profiles = disabled_profiles.filter(caste=selected_caste_disabled)
     # === DIVORCED FILTER ===
-    divorced_profiles = DivorcedProfile.objects.all()
+    divorced_profiles = DivorcedProfile.objects.filter(email__in=allowed_divorced_emails)
+
     caste_choices_divorced = DivorcedProfile.objects.values_list('caste', flat=True).distinct()
     search_query_divorced = request.GET.get('search', '') if show_divorced else ''
     selected_caste_divorced = request.GET.get('caste', '') if show_divorced else ''

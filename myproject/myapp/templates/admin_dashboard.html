@@ -109,6 +109,84 @@
           </form>
 
           {% elif request.GET.view == "users" %}
+
+
+<hr class="my-5">
+
+<h4 class="mb-3 text-success">🎯 Assign Profiles to Specific User</h4>
+<form method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="assign_profiles" value="1">
+  <div class="row g-3 align-items-center mb-3">
+
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Select User (By Email)</label>
+      <select name="target_user_email" class="form-select" required>
+        <option disabled selected>-- Choose User --</option>
+        {% for user in users %}
+          <option value="{{ user.email }}">{{ user.email }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Category</label>
+      <select name="category" class="form-select" required>
+        <option disabled selected>-- Choose Category --</option>
+        <option value="girls">Girls</option>
+        <option value="boys">Boys</option>
+        <option value="disabled">Disabled</option>
+        <option value="divorced">Divorced</option>
+      </select>
+    </div>
+    
+    {% comment %} <div class="col-md-4">
+      <label class="form-label fw-semibold">Filter by Caste</label>
+      <input type="text" name="caste_filter" placeholder="Enter Caste" class="form-control rounded-3">
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-12">
+      <button type="submit" class="btn btn-primary px-4 rounded-pill">🔍 Filter Profiles</button>
+    </div>
+  </div> {% endcomment %}
+  <div class="row g-3 mt-4">
+    {% if filtered_profiles %}
+      <h5 class="text-success"> Profiles ({{ filtered_profiles|length }})</h5>
+    {% else %}
+      <h5 class="text-muted">No profiles found matching the criteria.</h5>
+    {% endif %}
+    </div>
+
+
+
+<!-- ✅ Filtered Profile List -->
+<div class="col-md-12">
+  <label class="form-label fw-semibold">Select Profiles (Emails)</label>
+  <div class="form-check overflow-auto border rounded p-3" style="max-height: 200px;">
+    {% for profile in filtered_profiles %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="profile_emails" value="{{ profile.email }}" id="email_{{ forloop.counter }}">
+        <label class="form-check-label" for="email_{{ forloop.counter }}">
+          {{ profile.name }} <span class="text-success fw-bold">({{ profile.caste }})</span> ({{ profile.email }}) - {{ profile.city }}, {{ profile.state }}
+        </label>
+      </div>
+    {% empty %}
+      <p class="text-muted">No matching profiles found.</p>
+    {% endfor %}
+  </div>
+</div>
+
+
+    <div class="col-12 text-end">
+      <button type="submit" class="btn btn-success px-4 rounded-pill mt-3">✅ Assign Selected Profiles</button>
+    </div>
+  </div>
+</form>
+
+
+
+          
           <h4 class="mb-3 text-primary">👥 All Registered Users</h4>
           <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
 

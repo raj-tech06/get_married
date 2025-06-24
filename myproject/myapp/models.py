@@ -149,3 +149,18 @@ class DivorcedProfile(models.Model):
 class DivorcedProfilePhoto(models.Model):
     divorced = models.ForeignKey(DivorcedProfile, on_delete=models.CASCADE, related_name='photos')
     image = models.ImageField(upload_to='more_photos/')
+
+
+
+
+    # models.py
+
+class ProfilePermission(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    category = models.CharField(max_length=20, choices=[
+        ('boys', 'Boys'),
+        ('girls', 'Girls'),
+        ('disabled', 'Disabled'),
+        ('divorced', 'Divorced')
+    ])
+    profile_email = models.EmailField()  # Email of the profile (like a girl/boy/etc)
