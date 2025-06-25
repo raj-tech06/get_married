@@ -8,19 +8,6 @@ from django.db import models
 
 from django.db import models
 
-# class MyUser(models.Model):
-#     username = models.CharField(max_length=100)  # Full name
-#     email = models.EmailField(unique=True)
-#     password = models.CharField(max_length=100)
-
-#     address = models.TextField(blank=True, null=True)
-#     city = models.CharField(max_length=100, blank=True, null=True)
-#     state = models.CharField(max_length=100, blank=True, null=True)
-#     gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female')], blank=True, null=True)
-#     profile_image = models.ImageField(upload_to='profiles/', default='profiles/default.png', blank=True, null=True)
-
-#     def __str__(self):
-#         return self.username
 
 class MyUser(models.Model):
     username = models.CharField(max_length=100)
@@ -57,12 +44,6 @@ class UserPhoto(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Photo"
-
-
-
-
-
-
 
 
 
@@ -113,9 +94,7 @@ class BoyProfilePhoto(models.Model):
 
 class DisabledProfile(models.Model):
     name = models.CharField(max_length=100)
-    # caste = models.CharField(max_length=100, default='Unknown')  # or whatever default makes sense
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
-
     email = models.EmailField()
     phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
     address = models.TextField()
@@ -146,14 +125,12 @@ class DivorcedProfile(models.Model):
 
     def __str__(self):
         return self.name
+        
 class DivorcedProfilePhoto(models.Model):
     divorced = models.ForeignKey(DivorcedProfile, on_delete=models.CASCADE, related_name='photos')
     image = models.ImageField(upload_to='more_photos/')
 
 
-
-
-    # models.py
 
 class ProfilePermission(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
