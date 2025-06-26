@@ -134,6 +134,16 @@ def admin_dashboard(request):
     elif request.method == 'POST':
         name = request.POST.get('name')
         caste = request.POST.get('lastname')
+        dob = request.POST.get('dob')
+        birth_place = request.POST.get('birth_place')
+        birth_time = request.POST.get('birth_time')
+        about = request.POST.get('about')
+        height = request.POST.get('height')
+        note = request.POST.get('note')
+        education = request.POST.get('education')
+        occupation = request.POST.get('occupation')
+        father_name = request.POST.get('father_name')
+        mother_name = request.POST.get('mother_name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         address = request.POST.get('address')
@@ -146,6 +156,16 @@ def admin_dashboard(request):
         profile_data = {
             'name': name,
             'caste': caste,
+            'dob': dob,
+            'birth_place': birth_place,
+            'birth_time': birth_time,
+            'about': about,
+            'height': height,
+            'note': note,
+            'education': education,
+            'occupation': occupation,
+            'father_name': father_name,
+            'mother_name': mother_name,
             'email': email,
             'phone': phone,
             'address': address,
@@ -260,6 +280,16 @@ def user_dashboard(request):
 
         # --- Update User Model ---
         user.username = request.POST.get('username')
+        user.dob = request.POST.get('dob')  # ✅ Add this field
+        user.birth_place = request.POST.get('birth_place')  # ✅ Add this field
+        user.birth_time = request.POST.get('birth_time')  # ✅ Add this field
+        user.about = request.POST.get('about')  # ✅ Add this field
+        user.height = request.POST.get('height')  # ✅ Add this field
+        user.note = request.POST.get('note')  # ✅ Add this field
+        user.education = request.POST.get('education')  # ✅ Add this field
+        user.occupation = request.POST.get('occupation')  # ✅ Add this field
+        user.father_name = request.POST.get('father_name')  # ✅ Add this field
+        user.mother_name = request.POST.get('mother_name')  # ✅ Add this field
         user.caste = request.POST.get('lastname')
         user.phone = request.POST.get('phone')
         user.email = request.POST.get('email')
@@ -283,6 +313,16 @@ def user_dashboard(request):
         # --- Then: Save in selected category ---
         profile_data = {
             'name': user.username,
+            'dob': user.dob,
+            'birth_place': user.birth_place,
+            'birth_time': user.birth_time,
+            'about': user.about,
+            'height': user.height,
+            'note': user.note,
+            'education': user.education,
+            'occupation': user.occupation,
+            'father_name': user.father_name,
+            'mother_name': user.mother_name,
             'caste': user.caste,
             'email': user.email,
             'phone': user.phone,

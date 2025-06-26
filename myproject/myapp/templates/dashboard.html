@@ -26,71 +26,133 @@
   <div class="flex-grow-1 p-4">
     {# EDIT PROFILE #}
     {% if show_form %}
-      <h4 class="mb-4">Edit Profile</h4>
-      <form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data">
-     {% csrf_token %}
-        <div class="mb-3">
-          <label for="username" class="form-label">Full Name</label>
-          <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
-        </div>
-        <div class="mb-3">
-          <label for="username" class="form-label">last Name</label>
-          <input type="text" class="form-control" id="username" name="lastname" value="{{ user.caste }}">
-        </div>        
-        <div class="mb-3">
-          <label for="username" class="form-label">Number</label>
-          <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
-        </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email Address</label>
-          <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" name="password" value="{{ user.password }}">
-        </div>
-        <div class="mb-3">
-          <label for="address" class="form-label">Address</label>
-          <textarea class="form-control" id="address" name="address">{{ user.address }}</textarea>
-        </div>
-        <div class="mb-3">
-          <label for="city" class="form-label">City</label>
-          <input type="text" class="form-control" id="city" name="city" value="{{ user.city }}">
-        </div>
-        <div class="mb-3">
-          <label for="state" class="form-label">State</label>
-          <input type="text" class="form-control" id="state" name="state" value="{{ user.state }}">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Gender</label><br>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="gender" id="male" value="Male" {% if user.gender == 'Male' %}checked{% endif %}>
-            <label class="form-check-label" for="male">Male</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="gender" id="female" value="Female" {% if user.gender == 'Female' %}checked{% endif %}>
-            <label class="form-check-label" for="female">Female</label>
-          </div>
-            <div class="mb-3">
-            <label for="category" class="form-label">Category</label>
-            <select class="form-select" id="category" name="category" required>
-              <option value="" disabled selected>Select Category</option>
-              <option value="girls" {% if user.category == 'girls' %}selected{% endif %}>Girls</option>
-              <option value="boys" {% if user.category == 'boys' %}selected{% endif %}>Boys</option>
-              <option value="disabled" {% if user.category == 'disabled' %}selected{% endif %}>Disabled</option>
-              <option value="divorced" {% if user.category == 'divorced' %}selected{% endif %}>Divorced</option>
-            </select>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="profile_image" class="form-label">Profile Image</label><br>
-          {% if user.profile_image %}
-            <img src="{{ user.profile_image.url }}" width="100" class="mb-2"><br>
-          {% endif %}
-          <input class="form-control" type="file" id="profile_image" name="profile_image">
-        </div>
-        <button type="submit" class="btn btn-success">Update Profile</button>
-      </form>
+<h4 class="mb-4 text-center">Edit Profile</h4>
+
+<form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data" class="p-4 bg-light rounded shadow-sm">
+  {% csrf_token %}
+
+  <!-- 🔵 Profile Image + Name Section -->
+  <div class="mb-4 text-center">
+    <div class="mx-auto" style="width: 100px;">
+      {% if user.profile_image %}
+        <img src="{{ user.profile_image.url }}" class="rounded-circle shadow-sm mb-2" style="width: 100px; height: 100px; object-fit: cover;" alt="Profile Image">
+      {% else %}
+        <img src="https://via.placeholder.com/100" class="rounded-circle shadow-sm mb-2" alt="No Image">
+      {% endif %}
+    </div>
+    <!-- 👤 User Full Name -->
+    <div class="fw-semibold mt-1">{{ user.username }}</div>
+
+    <!-- 📤 Upload New Photo -->
+    <div class="mt-2 mx-auto" style="max-width: 200px;">
+      <input class="form-control form-control-sm" type="file" id="profile_image" name="profile_image">
+    </div>
+  </div>
+
+
+
+
+  <!-- 🔵 Form Body -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Full Name</label>
+      <input type="text" class="form-control rounded-3" name="username" value="{{ user.username }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Last Name</label>
+      <input type="text" class="form-control rounded-3" name="lastname" value="{{ user.caste }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Number</label>
+      <input type="text" class="form-control rounded-3" name="phone" value="{{ user.phone }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Email Address</label>
+      <input type="email" class="form-control rounded-3" name="email" value="{{ user.email }}" readonly>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Password</label>
+      <input type="password" class="form-control rounded-3" name="password" value="{{ user.password }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Date of Birth</label>
+      <input type="date" class="form-control rounded-3" name="dob" value="{{ user.dob }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Birth Place</label>
+      <input type="text" class="form-control rounded-3" name="birth_place" value="{{ user.birth_place }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Birth Time</label>
+      <input type="time" class="form-control rounded-3" name="birth_time" value="{{ user.birth_time }}">
+    </div>
+    <div class="col-12">
+      <label class="form-label fw-semibold">Address</label>
+      <textarea class="form-control rounded-3" name="address" rows="2">{{ user.address }}</textarea>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">City</label>
+      <input type="text" class="form-control rounded-3" name="city" value="{{ user.city }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">State</label>
+      <input type="text" class="form-control rounded-3" name="state" value="{{ user.state }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Height</label>
+      <input type="text" class="form-control rounded-3" name="height" value="{{ user.height }}">
+    </div>  
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Education</label>
+      <input type="text" class="form-control rounded-3" name="education" value="{{ user.education }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Occupation</label>
+      <input type="text" class="form-control rounded-3" name="occupation" value="{{ user.occupation }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Father's Name</label>
+      <input type="text" class="form-control rounded-3" name="father_name" value="{{ user.father_name }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Mother's Name</label>
+      <input type="text" class="form-control rounded-3" name="mother_name" value="{{ user.mother_name }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Gender</label><br>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="gender" id="male" value="Male" {% if user.gender == 'Male' %}checked{% endif %}>
+        <label class="form-check-label" for="male">Male</label>
+      </div>
+      <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="gender" id="female" value="Female" {% if user.gender == 'Female' %}checked{% endif %}>
+      <label class="form-check-label" for="female">Female</label>
+    </div>  
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Category</label>
+      <select class="form-select rounded-3" name="category" required>
+        <option value="" disabled selected>Select Category</option>
+        <option value="girls" {% if user.category == 'girls' %}selected{% endif %}>Girls</option>
+        <option value="boys" {% if user.category == 'boys' %}selected{% endif %}>Boys</option>
+        <option value="disabled" {% if user.category == 'disabled' %}selected{% endif %}>Disabled</option>
+        <option value="divorced" {% if user.category == 'divorced' %}selected{% endif %}>Divorced</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Note</label>
+      <textarea class="form-control rounded-3" name="note" rows="1">{{ user.note }}</textarea>
+    </div>    
+    <div class="col-12">
+      <label class="form-label fw-semibold">About</label>
+      <textarea class="form-control rounded-3" name="about" rows="3">{{ user.about }}</textarea>
+    </div>
+    <div class="col-12 text-end">
+      <button type="submit" class="btn btn-success mt-3 px-4">Update Profile</button>
+    </div>
+  </div>
+</form>
+
 
 
 
@@ -224,6 +286,17 @@
                 <li class="list-group-item"><strong>City:</strong> {{ boy.city }}</li>
                 <li class="list-group-item"><strong>State:</strong> {{ boy.state }}</li>
                 <li class="list-group-item"><strong>Gender:</strong> {{ boy.gender }}</li>
+                <li class="list-group-item"><strong>Date of Birth:</strong> {{ boy.dob }}</li>
+                <li class="list-group-item"><strong>Birth Place:</strong> {{ boy.birth_place }}</li>
+                <li class="list-group-item"><strong>Birth Time:</strong> {{ boy.birth_time }}</li>
+                <li class="list-group-item"><strong>About:</strong> {{ boy.about }}</li>
+                <li class="list-group-item"><strong>Height:</strong> {{ boy.height }}</li>
+                <li class="list-group-item"><strong>Note:</strong> {{ boy.note }}</li>
+                <li class="list-group-item"><strong>Education:</strong> {{ boy.education }}</li>
+                <li class="list-group-item"><strong>Occupation:</strong> {{ boy.occupation }}</li>
+                <li class="list-group-item"><strong>Father's Name:</strong> {{ boy.father_name }}</li>
+                <li class="list-group-item"><strong>Mother's Name:</strong> {{ boy.mother_name }}</li>
+
               </ul>
 
 <h6 class="text-success">More Photos</h6>
@@ -308,6 +381,16 @@
                       <li class="list-group-item"><strong>City:</strong> {{ girl.city }}</li>
                       <li class="list-group-item"><strong>State:</strong> {{ girl.state }}</li>
                       <li class="list-group-item"><strong>Gender:</strong> {{ girl.gender }}</li>
+                      <li class="list-group-item"><strong>Date of Birth:</strong> {{ girl.dob }}</li>
+                      <li class="list-group-item"><strong>Birth Place:</strong> {{ girl.birth_place }}</li>
+                      <li class="list-group-item"><strong>Birth Time:</strong> {{ girl.birth_time }}</li>
+                      <li class="list-group-item"><strong>About:</strong> {{ girl.about }}</li>
+                      <li class="list-group-item"><strong>Height:</strong> {{ girl.height }}</li>
+                      <li class="list-group-item"><strong>Note:</strong> {{ girl.note }}</li>
+                      <li class="list-group-item"><strong>Education:</strong> {{ girl.education }}</li>
+                      <li class="list-group-item"><strong>Occupation:</strong> {{ girl.occupation }}</li>
+                      <li class="list-group-item"><strong>Father's Name:</strong> {{ girl.father_name }}</li>
+                      <li class="list-group-item"><strong>Mother's Name:</strong> {{ girl.mother_name }}</li>
                     </ul>
 <h6 class="text-success">More Photos</h6>
 <div class="d-flex flex-wrap gap-2">
@@ -372,7 +455,7 @@
       </div>
     </div>
 
-    <!-- Modal -->
+          <!-- Modal for each disabled -->
     <div class="modal fade" id="disabledModal{{ disabled.id }}" tabindex="-1" aria-labelledby="disabledModalLabel{{ disabled.id }}" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-info rounded-4 shadow">
@@ -395,6 +478,16 @@
                 <li class="list-group-item"><strong>City:</strong> {{ disabled.city }}</li>
                 <li class="list-group-item"><strong>State:</strong> {{ disabled.state }}</li>
                 <li class="list-group-item"><strong>Gender:</strong> {{ disabled.gender }}</li>
+                <li class="list-group-item"><strong>Date of Birth:</strong> {{ disabled.dob }}</li>
+                <li class="list-group-item"><strong>Birth Place:</strong> {{ disabled.birth_place }}</li>
+                <li class="list-group-item"><strong>Birth Time:</strong> {{ disabled.birth_time }}</li>
+                <li class="list-group-item"><strong>About:</strong> {{ disabled.about }}</li>
+                <li class="list-group-item"><strong>Height:</strong> {{ disabled.height }}</li>
+                <li class="list-group-item"><strong>Note:</strong> {{ disabled.note }}</li>
+                <li class="list-group-item"><strong>Education:</strong> {{ disabled.education }}</li>
+                <li class="list-group-item"><strong>Occupation:</strong> {{ disabled.occupation }}</li>
+                <li class="list-group-item"><strong>Father's Name:</strong> {{ disabled.father_name }}</li>
+                <li class="list-group-item"><strong>Mother's Name:</strong> {{ disabled.mother_name }}</li>
               </ul>
 <h6 class="text-success">More Photos</h6>
 <div class="d-flex flex-wrap gap-2">
@@ -459,7 +552,7 @@
       </div>
     </div>
 
-    <!-- Modal -->
+          <!-- Modal for each divorced -->
     <div class="modal fade" id="divorcedModal{{ divorced.id }}" tabindex="-1" aria-labelledby="divorcedModalLabel{{ divorced.id }}" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-danger rounded-4 shadow">
@@ -482,6 +575,17 @@
                 <li class="list-group-item"><strong>City:</strong> {{ divorced.city }}</li>
                 <li class="list-group-item"><strong>State:</strong> {{ divorced.state }}</li>
                 <li class="list-group-item"><strong>Gender:</strong> {{ divorced.gender }}</li>
+                <li class="list-group-item"><strong>Date of Birth:</strong> {{ divorced.dob }}</li>
+                <li class="list-group-item"><strong>Birth Place:</strong> {{ divorced.birth_place }}</li>
+                <li class="list-group-item"><strong>Birth Time:</strong> {{ divorced.birth_time }}</li>
+                <li class="list-group-item"><strong>About:</strong> {{ divorced.about }}</li>
+                <li class="list-group-item"><strong>Height:</strong> {{ divorced.height }}</li>
+                <li class="list-group-item"><strong>Note:</strong> {{ divorced.note }}</li>
+                <li class="list-group-item"><strong>Education:</strong> {{ divorced.education }}</li>
+                <li class="list-group-item"><strong>Occupation:</strong> {{ divorced.occupation }}</li>
+                <li class="list-group-item"><strong>Father's Name:</strong> {{ divorced.father_name }}</li>
+                <li class="list-group-item"><strong>Mother's Name:</strong> {{ divorced.mother_name }}</li>
+
               </ul>
 <h6 class="text-success">More Photos</h6>
 <div class="d-flex flex-wrap gap-2">
@@ -517,6 +621,12 @@
         <p class="mb-1"><i class="bi bi-envelope-fill me-2 text-secondary"></i><strong>Email:</strong> {{ user.email }}</p>
         <p class="mb-1"><i class="bi bi-telephone-fill me-2 text-secondary"></i><strong>Phone:</strong> {{ user.phone }}</p>
         <p class="mb-1"><i class="bi bi-geo-alt-fill me-2 text-secondary"></i><strong>Address:</strong> {{ user.address }}, {{ user.city }}, {{ user.state }}</p>
+        <p class="mb-1"><i class="bi bi-gender-ambiguous me-2 text-secondary"></i><strong>Gender:</strong> {{ user.gender }}</p>
+        <p class="mb-1"><i class="bi bi-calendar-fill me-2 text-secondary"></i><strong>Date of Birth:</strong> {{ user.dob }}</p>
+        <p class="mb-1"><i class="bi bi-clock-fill me-2 text-secondary"></i><strong>Birth Time:</strong> {{ user.birth_time }}</p>
+        <p class="mb-1"><i class="bi bi-people-fill me-2 text-secondary"></i><strong>Father's Name:</strong> {{ user.father_name }}</p>
+        <p class="mb-1"><i class="bi bi-people-fill me-2 text-secondary"></i><strong>Mother's Name:</strong> {{ user.mother_name }}</p>
+        
       </div>
     </div>
   </div>
