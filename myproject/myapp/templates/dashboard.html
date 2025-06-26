@@ -1,6 +1,670 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+<div class="d-flex flex-column flex-md-row" style="min-height: 100vh;">
+  <!-- Sidebar -->
+<div class="p-3 bg-light" style="min-width:295px; max-width:295px; min-height: 100vh;">
+
+    <div class="text-center mb-3">
+      {% if user.profile_image %}
+        <img src="{{ user.profile_image.url }}" class="rounded-circle mb-2" width="120" height="120" alt="Profile Image">
+      {% endif %}
+      <h5>{{ user.username }}</h5>
+    </div>
+    <hr>
+    <ul class="nav flex-column">
+      <li class="nav-item mb-2"><a href="?edit=1#edit-profile-section" class="nav-link text-dark">✏️ Edit Profile</a></li>
+      <li class="nav-item mb-2"><a href="?add_photo=1#Upload-profile-section" class="nav-link text-dark">📸 More Photos Upload</a></li>
+      <li class="nav-item mb-2"><a href="?membership=1#Membership-profile-section" class="nav-link text-dark">💎 Membership</a></li>
+      <li class="nav-item mb-2"><a href="?girls=1#Girls-profile-section" class="nav-link text-dark">👩 Girls Profile</a></li>
+      <li class="nav-item mb-2"><a href="?boys=1#Boys-profile-section" class="nav-link text-dark">👦 Boys Profile</a></li>
+      <li class="nav-item mb-2"><a href="?disabled=1#Disabled-profile-section" class="nav-link text-dark">♿ Disabled Profile</a></li>
+      <li class="nav-item mb-2"><a href="?divorced=1#Divorced-profile-section" class="nav-link text-dark">💔 Divorced Profile</a></li>
+      <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow-1 p-4" id="edit-profile-section">
+
+      {% if show_form %}
+<h4 class="mb-4 text-center">Edit Profile</h4>
+
+<form action="{% url 'user_dashboard' %}" method="POST" enctype="multipart/form-data" class="p-4 bg-light rounded shadow-sm">
+  {% csrf_token %}
+
+  <!-- 🔵 Profile Image + Name Section -->
+  <div class="mb-4 text-center">
+    <div class="mx-auto" style="width: 100px;">
+      {% if user.profile_image %}
+        <img src="{{ user.profile_image.url }}" class="rounded-circle shadow-sm mb-2" style="width: 100px; height: 100px; object-fit: cover;" alt="Profile Image">
+      {% else %}
+        <img src="https://via.placeholder.com/100" class="rounded-circle shadow-sm mb-2" alt="No Image">
+      {% endif %}
+    </div>
+    <!-- 👤 User Full Name -->
+    <div class="fw-semibold mt-1">{{ user.username }}</div>
+
+    <!-- 📤 Upload New Photo -->
+    <div class="mt-2 mx-auto" style="max-width: 200px;">
+      <input class="form-control form-control-sm" type="file" id="profile_image" name="profile_image">
+    </div>
+  </div>
+
+
+
+
+  <!-- 🔵 Form Body -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Full Name</label>
+      <input type="text" class="form-control rounded-3" name="username" value="{{ user.username }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Last Name</label>
+      <input type="text" class="form-control rounded-3" name="lastname" value="{{ user.caste }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Number</label>
+      <input type="text" class="form-control rounded-3" name="phone" value="{{ user.phone }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Email Address</label>
+      <input type="email" class="form-control rounded-3" name="email" value="{{ user.email }}" readonly>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Password</label>
+      <input type="password" class="form-control rounded-3" name="password" value="{{ user.password }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Date of Birth</label>
+      <input type="date" class="form-control rounded-3" name="dob" value="{{ user.dob }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Birth Place</label>
+      <input type="text" class="form-control rounded-3" name="birth_place" value="{{ user.birth_place }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Birth Time</label>
+      <input type="time" class="form-control rounded-3" name="birth_time" value="{{ user.birth_time }}">
+    </div>
+    <div class="col-12">
+      <label class="form-label fw-semibold">Address</label>
+      <textarea class="form-control rounded-3" name="address" rows="2">{{ user.address }}</textarea>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">City</label>
+      <input type="text" class="form-control rounded-3" name="city" value="{{ user.city }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">State</label>
+      <input type="text" class="form-control rounded-3" name="state" value="{{ user.state }}">
+    </div>
+<div class="col-md-6">
+      <label class="form-label fw-semibold">Height</label>
+      <input type="text" class="form-control rounded-3" name="height" value="{{ user.height }}">
+    </div>  
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Education</label>
+      <input type="text" class="form-control rounded-3" name="education" value="{{ user.education }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Occupation</label>
+      <input type="text" class="form-control rounded-3" name="occupation" value="{{ user.occupation }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Father's Name</label>
+      <input type="text" class="form-control rounded-3" name="father_name" value="{{ user.father_name }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Mother's Name</label>
+      <input type="text" class="form-control rounded-3" name="mother_name" value="{{ user.mother_name }}">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Gender</label><br>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="gender" id="male" value="Male" {% if user.gender == 'Male' %}checked{% endif %}>
+        <label class="form-check-label" for="male">Male</label>
+      </div>
+      <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="gender" id="female" value="Female" {% if user.gender == 'Female' %}checked{% endif %}>
+      <label class="form-check-label" for="female">Female</label>
+    </div>  
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Category</label>
+      <select class="form-select rounded-3" name="category" required>
+        <option value="" disabled selected>Select Category</option>
+        <option value="girls" {% if user.category == 'girls' %}selected{% endif %}>Girls</option>
+        <option value="boys" {% if user.category == 'boys' %}selected{% endif %}>Boys</option>
+        <option value="disabled" {% if user.category == 'disabled' %}selected{% endif %}>Disabled</option>
+        <option value="divorced" {% if user.category == 'divorced' %}selected{% endif %}>Divorced</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">Note</label>
+      <textarea class="form-control rounded-3" name="note" rows="1">{{ user.note }}</textarea>
+    </div>    
+    <div class="col-12">
+      <label class="form-label fw-semibold">About</label>
+      <textarea class="form-control rounded-3" name="about" rows="3">{{ user.about }}</textarea>
+    </div>
+    <div class="col-12 text-end">
+      <button type="submit" class="btn btn-success mt-3 px-4">Update Profile</button>
+    </div>
+  </div>
+</form>
+
+
+
+
+{% elif show_add_photo %}
+  <h4 class="mb-4" id="Upload-profile-section">Upload More Photos</h4>
+  {% if photo_form %}
+    <div class="mt-4 p-3 border rounded bg-light" style="overflow-x: hidden; overflow-y: auto; max-height: 80vh;">
+
+      <h6>Upload a Photo</h6>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ photo_form.image.label_tag }}<br>
+        {{ photo_form.image }}<br><br>
+        <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+      </form>
+
+      <hr>
+<h6 class="text-success">More Photos</h6>
+<div class="d-flex flex-wrap gap-2">
+  {% for photo in boy.photos %}
+    <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+  {% empty %}
+    <p class="text-muted">No additional photos.</p>
+  {% endfor %}
+</div>
+
+    </div>
+
+    <a href="{% url 'user_dashboard' %}" class="btn btn-primary mt-4">← Back to Profile</a>
+  {% endif %}
+
+
+
+
+{% elif show_membership %}
+      <!-- Membership Plans -->
+      <h4 class="mb-4" id="Membership-profile-section">Choose Your Membership</h4>
+      <div class="row row-cols-1 row-cols-md-3 g-4" >
+        <div class="col">
+          <div class="card border-primary text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title">Silver</h5>
+              <p class="card-text">Basic matchmaking features.</p>
+              <h3>₹399</h3>
+              <button class="btn btn-primary">Buy Now</button>
+            </div>
+</div>
+        </div>
+        <div class="col">
+          <div class="card border-success text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title">Gold</h5>
+              <p class="card-text">Access to premium profiles.</p>
+              <h3>₹499</h3>
+              <button class="btn btn-success">Buy Now</button>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card border-warning text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title">Platinum</h5>
+              <p class="card-text">Priority matchmaking + Support.</p>
+              <h3>₹699</h3>
+              <button class="btn btn-warning">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-4">← Back to Profile</a>
+
+<!-- Example for Boys Profile -->
+{% elif show_boys %}
+  <h4 class="mt-5 text-primary" id="Boys-profile-section">Boys Profile</h4>
+  <!-- Filter/Search Form -->
+  <form method="GET" class="row g-3 mb-4">
+    <input type="hidden" name="boys" value="1">
+    <div class="col-md-6">
+      <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
+    </div>
+    <div class="col-md-4">
+      <select name="caste" class="form-select">
+        <option value="">Filter by caste</option>
+        {% for caste in caste_choices %}
+          <option value="{{ caste }}" {% if caste == selected_caste %}selected{% endif %}>{{ caste }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+
+  <div class="row">
+  {% for boy in boys_profiles %}
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow rounded-4 h-100">
+        {% if boy.image %}
+          <img src="{{ boy.image.url }}" class="card-img-top rounded-top" alt="{{ boy.name }}" style="height: 200px; object-fit: cover;">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{ boy.name }} {{ boy.caste }}</h5>
+          <p><strong>Email:</strong> {{ boy.email }}</p>
+          <p><strong>Phone:</strong> {{ boy.phone }}</p>
+          <p><strong>City:</strong> {{ boy.city }}, {{ boy.state }}</p>
+          <p><strong>Gender:</strong> {{ boy.gender }}</p>
+          <button class="btn btn-outline-primary mt-2 w-100" data-bs-toggle="modal" data-bs-target="#boyModal{{ boy.id }}">More Details</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for each boy -->
+    <div class="modal fade" id="boyModal{{ boy.id }}" tabindex="-1" aria-labelledby="boyModalLabel{{ boy.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-primary rounded-4 shadow">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="boyModalLabel{{ boy.id }}">{{ boy.name }}'s Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-5 text-center">
+              {% if boy.image %}
+                <img src="{{ boy.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ boy.name }}">
+              {% endif %}
+            </div>
+            <div class="col-md-7">
+              <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item"><strong>Name:</strong> {{ boy.name }}</li>
+                <li class="list-group-item"><strong>Caste:</strong> {{ boy.caste }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ boy.email }}</li>
+                <li class="list-group-item"><strong>Phone:</strong> {{ boy.phone }}</li>
+                <li class="list-group-item"><strong>City:</strong> {{ boy.city }}</li>
+                <li class="list-group-item"><strong>State:</strong> {{ boy.state }}</li>
+                <li class="list-group-item"><strong>Gender:</strong> {{ boy.gender }}</li>
+                <li class="list-group-item"><strong>Date of Birth:</strong> {{ boy.dob }}</li>
+                <li class="list-group-item"><strong>Birth Place:</strong> {{ boy.birth_place }}</li>
+                <li class="list-group-item"><strong>Birth Time:</strong> {{ boy.birth_time }}</li>
+                <li class="list-group-item"><strong>About:</strong> {{ boy.about }}</li>
+                <li class="list-group-item"><strong>Height:</strong> {{ boy.height }}</li>
+                <li class="list-group-item"><strong>Note:</strong> {{ boy.note }}</li>
+                <li class="list-group-item"><strong>Education:</strong> {{ boy.education }}</li>
+                <li class="list-group-item"><strong>Occupation:</strong> {{ boy.occupation }}</li>
+                <li class="list-group-item"><strong>Father's Name:</strong> {{ boy.father_name }}</li>
+                <li class="list-group-item"><strong>Mother's Name:</strong> {{ boy.mother_name }}</li>
+
+              </ul>
+
+<h6 class="text-success">More Photos</h6>
+<div class="d-flex flex-wrap gap-2">
+  {% for photo in boy.extra_photos.all %}
+    <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+  {% empty %}
+    <p class="text-muted">No additional photos.</p>
+  {% endfor %}
+</div>
+
+
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+      
+    {% elif show_girls %}
+      <h4 class="mt-3 text-success" id="Girls-profile-section">Girls Profile</h4>
+      <form method="GET" class="row g-3 mb-4">
+        <input type="hidden" name="girls" value="1">
+        <div class="col-md-6">
+          <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
+        </div>
+        <div class="col-md-4">
+          <select name="caste" class="form-select">
+            <option value="">Filter by caste</option>
+            {% for caste in caste_choices %}
+              <option value="{{ caste }}" {% if caste == selected_caste %}selected{% endif %}>{{ caste }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2"><button class="btn btn-primary w-100">Search</button></div>
+      </form>
+
+      <div class="row">
+        {% for girl in girls_profiles %}
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow rounded-4 h-100">
+              {% if girl.image %}
+                <img src="{{ girl.image.url }}" class="card-img-top rounded-top" style="height:200px; object-fit:cover;" alt="{{ girl.name }}">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title fw-bold">{{ girl.name }}  {{ girl.caste }}</h5>
+                <p><strong>Email:</strong> {{ girl.email }}</p>
+                <p><strong>Phone:</strong> {{ girl.phone }}</p>
+                <p><strong>City:</strong> {{ girl.city }}, {{ girl.state }}</p>
+                <p><strong>Gender:</strong> {{ girl.gender }}</p>
+                <button class="btn btn-outline-success mt-2 w-100" data-bs-toggle="modal" data-bs-target="#girlModal{{ girl.id }}">More Details</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal for each girl -->
+          <div class="modal fade" id="girlModal{{ girl.id }}" tabindex="-1" aria-labelledby="girlModalLabel{{ girl.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-content border-success rounded-4 shadow">
+                <div class="modal-header bg-success text-white">
+                  <h5 class="modal-title" id="girlModalLabel{{ girl.id }}">{{ girl.name }}'s Profile</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row">
+                  <div class="col-md-5 text-center">
+                    {% if girl.image %}
+                      <img src="{{ girl.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ girl.name }}">
+                    {% endif %}
+                  </div>
+                  <div class="col-md-7">
+                    <ul class="list-group list-group-flush mb-3">
+                      <li class="list-group-item"><strong>Name:</strong> {{ girl.name }}</li>
+                      <li class="list-group-item"><strong>Caste:</strong> {{ girl.caste }}</li>
+                      <li class="list-group-item"><strong>Email:</strong> {{ girl.email }}</li>
+                      <li class="list-group-item"><strong>Phone:</strong> {{ girl.phone }}</li>
+                      <li class="list-group-item"><strong>City:</strong> {{ girl.city }}</li>
+                      <li class="list-group-item"><strong>State:</strong> {{ girl.state }}</li>
+                      <li class="list-group-item"><strong>Gender:</strong> {{ girl.gender }}</li>
+                      <li class="list-group-item"><strong>Date of Birth:</strong> {{ girl.dob }}</li>
+                      <li class="list-group-item"><strong>Birth Place:</strong> {{ girl.birth_place }}</li>
+                      <li class="list-group-item"><strong>Birth Time:</strong> {{ girl.birth_time }}</li>
+                      <li class="list-group-item"><strong>About:</strong> {{ girl.about }}</li>
+                      <li class="list-group-item"><strong>Height:</strong> {{ girl.height }}</li>
+                      <li class="list-group-item"><strong>Note:</strong> {{ girl.note }}</li>
+                      <li class="list-group-item"><strong>Education:</strong> {{ girl.education }}</li>
+                      <li class="list-group-item"><strong>Occupation:</strong> {{ girl.occupation }}</li>
+                      <li class="list-group-item"><strong>Father's Name:</strong> {{ girl.father_name }}</li>
+                      <li class="list-group-item"><strong>Mother's Name:</strong> {{ girl.mother_name }}</li>
+                    </ul>
+<h6 class="text-success">More Photos</h6>
+<div class="d-flex flex-wrap gap-2">
+  {% for photo in girl.extra_photos.all %}
+    <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+  {% empty %}
+    <p class="text-muted">No additional photos.</p>
+ {% endfor %}
+</div>
+
+
+                    
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Example for Disabled Profile -->
+{% elif show_disabled %}
+  <h4 class="mt-5 text-primary" id="Disabled-profile-section">Disabled Profile</h4>
+
+  <!-- Filter/Search Form -->
+  <form method="GET" class="row g-3 mb-4">
+    <input type="hidden" name="disabled" value="1">
+    <div class="col-md-6">
+      <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
+    </div>
+    <div class="col-md-4">
+      <select name="caste" class="form-select">
+        <option value="">Filter by caste</option>
+        {% for caste in caste_choices %}
+          <option value="{{ caste }}" {% if caste == selected_caste %}selected{% endif %}>{{ caste }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+
+  <div class="row">
+  {% for disabled in disabled_profiles %}
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow rounded-4 h-100">
+        {% if disabled.image %}
+          <img src="{{ disabled.image.url }}" class="card-img-top rounded-top" style="height: 200px; object-fit: cover;" alt="{{ disabled.name }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{ disabled.name }} {{ disabled.caste }}</h5>
+          <p><strong>Email:</strong> {{ disabled.email }}</p>
+          <p><strong>Phone:</strong> {{ disabled.phone }}</p>
+          <p><strong>City:</strong> {{ disabled.city }}, {{ disabled.state }}</p>
+          <p><strong>Gender:</strong> {{ disabled.gender }}</p>
+          <button class="btn btn-outline-info mt-2 w-100" data-bs-toggle="modal" data-bs-target="#disabledModal{{ disabled.id }}">More Details</button>
+        </div>
+      </div>
+    </div>
+
+          <!-- Modal for each disabled -->
+    <div class="modal fade" id="disabledModal{{ disabled.id }}" tabindex="-1" aria-labelledby="disabledModalLabel{{ disabled.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-info rounded-4 shadow">
+          <div class="modal-header bg-info text-white">
+            <h5 class="modal-title" id="disabledModalLabel{{ disabled.id }}">{{ disabled.name }}'s Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-5 text-center">
+              {% if disabled.image %}
+                <img src="{{ disabled.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ disabled.name }}">
+              {% endif %}
+            </div>
+            <div class="col-md-7">
+              <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item"><strong>Name:</strong> {{ disabled.name }}</li>
+                <li class="list-group-item"><strong>Caste:</strong> {{ disabled.caste }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ disabled.email }}</li>
+                <li class="list-group-item"><strong>Phone:</strong> {{ disabled.phone }}</li>
+                <li class="list-group-item"><strong>City:</strong> {{ disabled.city }}</li>
+                <li class="list-group-item"><strong>State:</strong> {{ disabled.state }}</li>
+                <li class="list-group-item"><strong>Gender:</strong> {{ disabled.gender }}</li>
+                <li class="list-group-item"><strong>Date of Birth:</strong> {{ disabled.dob }}</li>
+                <li class="list-group-item"><strong>Birth Place:</strong> {{ disabled.birth_place }}</li>
+                <li class="list-group-item"><strong>Birth Time:</strong> {{ disabled.birth_time }}</li>
+                <li class="list-group-item"><strong>About:</strong> {{ disabled.about }}</li>
+                <li class="list-group-item"><strong>Height:</strong> {{ disabled.height }}</li>
+                <li class="list-group-item"><strong>Note:</strong> {{ disabled.note }}</li>
+                <li class="list-group-item"><strong>Education:</strong> {{ disabled.education }}</li>
+                <li class="list-group-item"><strong>Occupation:</strong> {{ disabled.occupation }}</li>
+                <li class="list-group-item"><strong>Father's Name:</strong> {{ disabled.father_name }}</li>
+                <li class="list-group-item"><strong>Mother's Name:</strong> {{ disabled.mother_name }}</li>
+              </ul>
+<h6 class="text-success">More Photos</h6>
+<div class="d-flex flex-wrap gap-2">
+  {% for photo in disabled.extra_photos.all %}
+    <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+  {% empty %}
+    <p class="text-muted">No additional photos.</p>
+  {% endfor %}
+</div>
+
+    
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Example for Disabled Profile -->
+{% elif show_divorced %}
+  <h4 class="mt-5 text-primary" id="Divorced-profile-section">Divorced Profile</h4>
+
+  <!-- Filter/Search Form -->
+  <form method="GET" class="row g-3 mb-4">
+  <input type="hidden" name="divorced" value="1">
+
+    <div class="col-md-6">
+      <input type="text" name="search" class="form-control" placeholder="Search by name or caste..." value="{{ search_query }}">
+    </div>
+    <div class="col-md-4">
+      <select name="caste" class="form-select">
+        <option value="">Filter by caste</option>
+        {% for caste in caste_choices %}
+          <option value="{{ caste }}" {% if caste == selected_caste %}selected{% endif %}>{{ caste }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+
+  <div class="row">
+  {% for divorced in divorced_profiles %}
+    <div class="col-md-4 mb-4">
+      <div class="card border-0 shadow rounded-4 h-100">
+        {% if divorced.image %}
+          <img src="{{ divorced.image.url }}" class="card-img-top rounded-top" style="height: 200px; object-fit: cover;" alt="{{ divorced.name }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{ divorced.name }} {{ divorced.caste }}</h5>
+          <p><strong>Email:</strong> {{ divorced.email }}</p>
+          <p><strong>Phone:</strong> {{ divorced.phone }}</p>
+          <p><strong>City:</strong> {{ divorced.city }}, {{ divorced.state }}</p>
+          <p><strong>Gender:</strong> {{ divorced.gender }}</p>
+          <button class="btn btn-outline-danger mt-2 w-100" data-bs-toggle="modal" data-bs-target="#divorcedModal{{ divorced.id }}">More Details</button>
+        </div>
+      </div>
+    </div>
+
+          <!-- Modal for each divorced -->
+    <div class="modal fade" id="divorcedModal{{ divorced.id }}" tabindex="-1" aria-labelledby="divorcedModalLabel{{ divorced.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-danger rounded-4 shadow">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="divorcedModalLabel{{ divorced.id }}">{{ divorced.name }}'s Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-5 text-center">
+              {% if divorced.image %}
+                <img src="{{ divorced.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ divorced.name }}">
+              {% endif %}
+            </div>
+            <div class="col-md-7">
+              <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item"><strong>Name:</strong> {{ divorced.name }}</li>
+                <li class="list-group-item"><strong>Caste:</strong> {{ divorced.caste }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ divorced.email }}</li>
+                <li class="list-group-item"><strong>Phone:</strong> {{ divorced.phone }}</li>
+                <li class="list-group-item"><strong>City:</strong> {{ divorced.city }}</li>
+                <li class="list-group-item"><strong>State:</strong> {{ divorced.state }}</li>
+                <li class="list-group-item"><strong>Gender:</strong> {{ divorced.gender }}</li>
+                <li class="list-group-item"><strong>Date of Birth:</strong> {{ divorced.dob }}</li>
+                <li class="list-group-item"><strong>Birth Place:</strong> {{ divorced.birth_place }}</li>
+                <li class="list-group-item"><strong>Birth Time:</strong> {{ divorced.birth_time }}</li>
+                <li class="list-group-item"><strong>About:</strong> {{ divorced.about }}</li>
+                <li class="list-group-item"><strong>Height:</strong> {{ divorced.height }}</li>
+                <li class="list-group-item"><strong>Note:</strong> {{ divorced.note }}</li>
+                <li class="list-group-item"><strong>Education:</strong> {{ divorced.education }}</li>
+                <li class="list-group-item"><strong>Occupation:</strong> {{ divorced.occupation }}</li>
+                <li class="list-group-item"><strong>Father's Name:</strong> {{ divorced.father_name }}</li>
+                <li class="list-group-item"><strong>Mother's Name:</strong> {{ divorced.mother_name }}</li>
+
+              </ul>
+<h6 class="text-success">More Photos</h6>
+<div class="d-flex flex-wrap gap-2">
+  {% for photo in divorced.extra_photos.all %}
+    <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+  {% empty %}
+    <p class="text-muted">No additional photos.</p>
+  {% endfor %}
+</div>
+
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+    {% else %}
+      <!-- ✅ Default: User Profile Display with Uploaded Photos -->
+      <div class="card shadow-lg border-0 rounded-4 p-3 mx-auto" style="max-width: 600px;">
+        <div class="row g-0 align-items-center">
+          <div class="col-md-8">
+            <div class="card-body">
+              <h4 class="card-title text-primary mb-2"><i class="bi bi-person-fill"></i> <strong>{{ user.username }} {{ user.caste }}</strong></h4>
+              <p class="mb-1"><i class="bi bi-envelope-fill me-2 text-secondary"></i><strong>Email:</strong> {{ user.email }}</p>
+              <p class="mb-1"><i class="bi bi-telephone-fill me-2 text-secondary"></i><strong>Phone:</strong> {{ user.phone }}</p>
+              <p class="mb-1"><i class="bi bi-geo-alt-fill me-2 text-secondary"></i><strong>Address:</strong> {{ user.address }}, {{ user.city }}, {{ user.state }}</p>
+              <p class="mb-1"><i class="bi bi-gender-ambiguous me-2 text-secondary"></i><strong>Gender:</strong> {{ user.gender }}</p>
+              <p class="mb-1"><i class="bi bi-calendar-fill me-2 text-secondary"></i><strong>Date of Birth:</strong> {{ user.dob }}</p>
+              <p class="mb-1"><i class="bi bi-clock-fill me-2 text-secondary"></i><strong>Birth Time:</strong> {{ user.birth_time }}</p>
+              <p class="mb-1"><i class="bi bi-people-fill me-2 text-secondary"></i><strong>Father's Name:</strong> {{ user.father_name }}</p>
+              <p class="mb-1"><i class="bi bi-people-fill me-2 text-secondary"></i><strong>Mother's Name:</strong> {{ user.mother_name }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-muted mt-2">You can edit your profile or upload more photos using the options in the sidebar.</p>
+
+      <hr>
+      <h5 class="mt-4">Your Profile Photos</h5>
+      <div class="row">
+        {% for photo in user_photos %}
+          <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div class="card shadow-sm rounded-3">
+              <img src="{{ photo.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;" alt="Profile Photo">
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-muted">No photos uploaded yet.</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <!-- 🔼 YOUR FULL CODE ENDS HERE -->
+  </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends 'base.html' %}
+{% load static %}
+{% block content %}
 <div class="d-flex" style="min-height: 100vh; align-items: stretch;">
   <!-- Sidebar -->
   <div style="width: 250px; background-color: #f1f1f1; flex-shrink: 0;" class="p-3">
@@ -98,7 +762,7 @@
       <label class="form-label fw-semibold">State</label>
       <input type="text" class="form-control rounded-3" name="state" value="{{ user.state }}">
     </div>
-    <div class="col-md-6">
+<div class="col-md-6">
       <label class="form-label fw-semibold">Height</label>
       <input type="text" class="form-control rounded-3" name="height" value="{{ user.height }}">
     </div>  
@@ -198,7 +862,7 @@
               <h3>₹399</h3>
               <button class="btn btn-primary">Buy Now</button>
             </div>
-          </div>
+</div>
         </div>
         <div class="col">
           <div class="card border-success text-center h-100">
@@ -398,7 +1062,7 @@
     <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
   {% empty %}
     <p class="text-muted">No additional photos.</p>
-  {% endfor %}
+ {% endfor %}
 </div>
 
 
@@ -498,7 +1162,7 @@
   {% endfor %}
 </div>
 
-       
+    
             </div>
           </div>
           <div class="modal-footer">
@@ -597,9 +1261,6 @@
 </div>
 
 
-
-
-
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -651,4 +1312,7 @@
   </div>
   </div>
 </div>
-{% endblock %}
+{% endblock %} 
+
+
+ {% endcomment %}

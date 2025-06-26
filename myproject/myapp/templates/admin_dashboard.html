@@ -23,16 +23,16 @@
       <h4 class="text-center mb-4">Admin Panel</h4>
       <ul class="nav flex-column">
           <li class="nav-item mb-3">
-          <a href="?view=admin" class="btn btn-primary w-100">Admin</a>
+          <a href="?view=admin#admin-section" class="btn btn-primary w-100">Admin</a>
         </li>
         <li class="nav-item mb-3">
-          <a href="?view=add" class="btn btn-primary w-100">➕ Add Profile</a>
+          <a href="?view=add#add-section" class="btn btn-primary w-100">➕ Add Profile</a>
         </li>
         <li class="nav-item mb-3">
-          <a href="?view=all" class="btn btn-primary w-100">🌐 All Profiles</a>
+          <a href="?view=all#all-section" class="btn btn-primary w-100">🌐 All Profiles</a>
         </li>
         <li class="nav-item mb-3">
-          <a href="?view=users" class="btn btn-primary w-100">👥 All Registered Users</a>
+          <a href="?view=users#users-section" class="btn btn-primary w-100">👥 All Registered Users</a>
         </li>
         <li class="nav-item mb-3">
           <a href="{% url 'logout' %}" class="btn btn-danger w-100">🚪 Logout</a>
@@ -41,14 +41,14 @@
     </div>
 
     <!-- Main Content -->
-    <div class="col-md-9 p-4">
+    <div class="col-md-9 p-4" id="admin-section">
       <div class="text-center mb-4">
         <h2>Welcome Admin: <span class="text-success">{{ user_name }}</span></h2>
       </div>
 
-      <div id="form-section" class="card shadow-lg border-0 rounded-4 p-4 bg-light">
+      <div id="form-section" class="card shadow-lg border-0 rounded-4 p-4 bg-light" >
         {% if request.GET.view == "add" or not request.GET.view %}
-          <h4 class="mb-4 text-success fw-bold">➕ Add New User Profile</h4>
+          <h4 class="mb-4 text-success fw-bold" id="add-section">➕ Add New User Profile</h4>
           <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row g-3">
@@ -113,7 +113,7 @@
 
 <hr class="my-5">
 
-<h4 class="mb-3 text-success">🎯 Assign Profiles to Specific User</h4>
+<h4 class="mb-3 text-success" id="assign-section">🎯 Assign Profiles to Specific User</h4>
 <form method="POST">
   {% csrf_token %}
   <input type="hidden" name="assign_profiles" value="1">
@@ -186,8 +186,8 @@
 
 
 
-          
-          <h4 class="mb-3 text-primary">👥 All Registered Users</h4>
+
+          <h4 class="mb-3 text-primary" id="users-section">👥 All Registered Users</h4>
           <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
 
             <div class="row g-4">
@@ -243,7 +243,7 @@
 
 
         {% elif request.GET.view == "all" %}
-          <h4 class="mb-4 fw-bold text-primary">🌐 All Profiles</h4>
+          <h4 class="mb-4 fw-bold text-primary" id="all-section">🌐 All Profiles</h4>
           <div class="row g-4">
             <div class="col-md-6 col-lg-3">
               <a href="?view=girls" class="text-decoration-none text-dark">
