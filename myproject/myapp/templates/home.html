@@ -24,7 +24,7 @@
       {% endfor %}
     {% endif %} {% endcomment %}
 
-    <form method="POST" novalidate>
+    <form method="POST">
       {% csrf_token %}
       <div class="form-floating mb-3">
         <input type="text" name="username" class="form-control rounded-pill border-success" id="username" placeholder="Username" required>

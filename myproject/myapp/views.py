@@ -28,7 +28,7 @@ def register_view(request):
         # Save user
         MyUser.objects.create(username=username, email=email, password=password)
         messages.success(request, "Registration successful! Please log in.")
-        return redirect('login_user')
+        return render(request, 'login_user.html')
 
     return render(request, 'home.html')
 
