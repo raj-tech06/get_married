@@ -16,13 +16,13 @@
     <h3 class="text-center mb-4 fw-bold" style="color: #33691e;">Register Now</h3>
 
 
-    {% comment %} {% if messages %}
+    {% if messages %}
       {% for message in messages %}
         <div class="alert alert-{{ message.tags }} text-center py-2">
-          {{ message }}
+          <span style="color:red">{{ message }}</span>
         </div>
       {% endfor %}
-    {% endif %} {% endcomment %}
+    {% endif %}
 
     <form method="POST">
       {% csrf_token %}

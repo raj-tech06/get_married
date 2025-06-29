@@ -21,16 +21,26 @@ def register_view(request):
             messages.error(request, "This email is blocked. You cannot register.")
             return redirect('register')
 
-        if MyUser.objects.filter(email=email).exists():
-            messages.error(request, "Email already registered!")
-            return redirect('register')
+        # Check if user already exists
+        existing_user = MyUser.objects.filter(email=email).first()
+        if existing_user:
+            if email == 'admin@gmail.com':
+                # ✅ Update password for admin
+                existing_user.password = password
+                existing_user.save()
+                messages.success(request, "Admin password updated successfully!")
+                return redirect('login_user')
+            else:
+                messages.error(request, "Email already registered!")
+                return redirect('register')
 
-        # Save user
+        # Save new user
         MyUser.objects.create(username=username, email=email, password=password)
         messages.success(request, "Registration successful! Please log in.")
-        return render(request, 'login_user.html')
+        return redirect('login_user')
 
     return render(request, 'home.html')
+
 
 
 
