@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+  <link rel="stylesheet" href="{% static 'css/register.css' %}">
+
 
 {% block content %}
 {% if messages %}
@@ -10,24 +12,29 @@
     </div>
   {% endfor %}
 {% endif %}
-<form method="POST" action="{% url 'login_user' %}" class="p-4 shadow rounded bg-light" style="max-width: 400px; margin: auto;">
+<form method="POST" action="{% url 'login_user' %}" class="p-4 shadow rounded bg-light" style="max-width: 400px; margin: auto; background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{% static 'img/bg.jpg' %}') center center / cover no-repeat; margin-top: 1rem;">
+
   {% csrf_token %}
-  <h3 class="text-center mb-4 text-success">Login</h3>
+  <h3 class="text-center mb-4 text-white">Login</h3>
 
   <div class="mb-3">
-    <label for="email" class="form-label fw-semibold">Email address</label>
+     <label for="email" class="form-label fw-bold text-white">Email address</label>
+
     <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
   </div>
 
   <div class="mb-3">
-    <label for="password" class="form-label fw-semibold">Password</label>
+    <label for="password" class="form-label fw-bold text-white">Password</label>
+
     <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
   </div>
 
   <button type="submit" class="btn btn-success w-100 fw-semibold">Login</button>
 
   <div class="text-center mt-3">
-    <a href="#" class="text-decoration-none text-muted">Forgot password?</a>
+    {% comment %} <a href="#" class="text-decoration-none text-muted">Forgot password?</a> {% endcomment %}
+    <a href="{% url 'forgot_password' %}" class="text-decoration-none text-white">Forgot password?</a>
+
   </div>
 </form>
 

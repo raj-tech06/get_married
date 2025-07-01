@@ -201,16 +201,7 @@
       </select>
     </div>
     
-    {% comment %} <div class="col-md-4">
-      <label class="form-label fw-semibold">Filter by Caste</label>
-      <input type="text" name="caste_filter" placeholder="Enter Caste" class="form-control rounded-3">
-    </div>
-  </div>
-  <div class="row g-3">
-    <div class="col-md-12">
-      <button type="submit" class="btn btn-primary px-4 rounded-pill">🔍 Filter Profiles</button>
-    </div>
-  </div> {% endcomment %}
+
   <div class="row g-3 mt-4">
     {% if filtered_profiles %}
       <h5 class="text-success"> Profiles ({{ filtered_profiles|length }})</h5>
@@ -249,58 +240,92 @@
 
 
           <h4 class="mb-3 text-primary" id="users-section">👥 All Registered Users</h4>
-          <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
+<a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
 
-            <div class="row g-4">
-              {% for user in users %}
-                <div class="col-md-4">
-                  <div class="card h-100 shadow-sm border-0 rounded-4">
+<div class="row g-4">
+  {% for user in users %}
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
 
-                    <!-- User Image with fixed size and styling -->
-                    <div class="text-center mt-3">
-                      {% if user.profile_image %}
-                        <img src="{{ user.profile_image.url }}" 
-                            class="rounded-circle shadow-sm border border-2" 
-                            alt="{{ user.username }}" 
-                            style="width: 150px; height: 150px; object-fit: cover;">
-                      {% else %}
-                        <img src="{% static 'img/default.jpg' %}" 
-                            class="rounded-circle shadow-sm border border-2" 
-                            alt="Default User" 
-                            style="width: 150px; height: 150px; object-fit: cover;">
-                      {% endif %}
-                    </div>
+        <!-- User Image -->
+        <div class="text-center mt-3">
+          {% if user.profile_image %}
+            <img src="{{ user.profile_image.url }}" class="rounded-circle shadow-sm border border-2" alt="{{ user.username }}" style="width: 150px; height: 150px; object-fit: cover;">
+          {% else %}
+            <img src="{% static 'img/default.jpg' %}" class="rounded-circle shadow-sm border border-2" alt="Default User" style="width: 150px; height: 150px; object-fit: cover;">
+          {% endif %}
+        </div>
 
-                    <!-- User Details -->
-                    <div class="card-body text-center">
-                      <h5 class="card-title mb-1">{{ user.username }}</h5>
-                      <p class="text-secondary mb-1">{{ user.city }}, {{ user.state }}</p>
-                      <p class="text-muted small mb-1">{{ user.email }}{% if user.phone %} | {{ user.phone }}{% endif %}</p>
-                      <p class="text-muted small mb-2">Gender: {{ user.gender }}</p>
-                      <p class="text-muted small">Password: {{ user.password }}</p>
+        <!-- User Details -->
+        <div class="card-body text-center">
+          <h5 class="card-title mb-1">{{ user.username }}</h5>
+          <p class="text-secondary mb-1">{{ user.city }}, {{ user.state }}</p>
+          <p class="text-muted small mb-1">{{ user.email }}{% if user.phone %} | {{ user.phone }}{% endif %}</p>
+          <p class="text-muted small mb-2">Gender: {{ user.gender }}</p>
+          <p class="text-muted small">Password: {{ user.password }}</p>
 
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-center gap-2 mt-2">
+            <form method="POST" action="{% url 'delete_user' user.id %}">{% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+            <form method="POST" action="{% url 'block_user' user.id %}">{% csrf_token %}
+              <button type="submit" class="btn {% if user.is_blocked %}btn-success{% else %}btn-warning{% endif %} btn-sm">
+                {% if user.is_blocked %}Unblock{% else %}Block{% endif %}
+              </button>
+            </form>
 
-                      <!-- Action Buttons -->
-                      <div class="d-flex justify-content-center gap-2">
-                        <form method="POST" action="{% url 'delete_user' user.id %}">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-
-                        <form method="POST" action="{% url 'block_user' user.id %}">
-                          {% csrf_token %}
-                          <button type="submit" class="btn {% if user.is_blocked %}btn-success{% else %}btn-warning{% endif %} btn-sm">
-                            {% if user.is_blocked %}Unblock{% else %}Block{% endif %}
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
+            <!-- 📂 Seen Button -->
+            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#seenModal{{ user.id }}">
+              📂 Seen
+            </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📂 Seen Modal -->
+    <div class="modal fade" id="seenModal{{ user.id }}" tabindex="-1" aria-labelledby="seenModalLabel{{ user.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content rounded-4">
+          <div class="modal-header">
+            <h5 class="modal-title" id="seenModalLabel{{ user.id }}">👀 Assigned Profiles for {{ user.username }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {% for entry in user_profile_data %}
+              {% if entry.user.id == user.id %}
+                <form method="POST" action="{% url 'bulk_unassign_profiles' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ user.id }}">
+
+                  {% if entry.profiles %}
+                    <ul class="list-group">
+                      {% for profile in entry.profiles %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <label class="form-check-label d-block w-100">
+                            <input type="checkbox" name="selected_profiles" value="{{ profile.email }}" class="form-check-input me-2">
+                            <strong>{{ profile.name }}</strong> — {{ profile.email }} | {{ profile.city }}, {{ profile.state }}
+                          </label>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                    <div class="text-end mt-3">
+                      <button type="submit" class="btn btn-danger btn-sm">🗑 Delete Selected</button>
+                    </div>
+                  {% else %}
+                    <p class="text-muted">No assigned profiles found.</p>
+                  {% endif %}
+                </form>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
 
 
         {% elif request.GET.view == "all" %}

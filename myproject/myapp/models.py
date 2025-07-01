@@ -79,6 +79,9 @@ class GirlsProfile(models.Model):
     occupation = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     father_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     mother_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
+
+    is_approved = models.BooleanField(default=False)
+
     
 
     def __str__(self):
@@ -113,6 +116,7 @@ class BoysProfile(models.Model):
     father_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     mother_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     
+    is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -143,6 +147,8 @@ class DisabledProfile(models.Model):
     father_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     mother_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     
+    is_approved = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.name
@@ -171,6 +177,9 @@ class DivorcedProfile(models.Model):
     occupation = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     father_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     mother_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
+    
+
+    is_approved = models.BooleanField(default=False)
     
 
     def __str__(self):

@@ -58,67 +58,67 @@
   <div class="row g-3">
     <div class="col-md-6">
       <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="username" value="{{ user.username }}" required>
+      <input type="text" class="form-control rounded-3" name="username" value="{{ user.username }}" required placeholder="Full Name">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="lastname" value="{{ user.caste }}" required>
+      <input type="text" class="form-control rounded-3" name="lastname" value="{{ user.caste|default_if_none:'' }}" required placeholder="Last Name">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Number <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="phone" value="{{ user.phone }}" required>
+      <input type="text" class="form-control rounded-3" name="phone" value="{{ user.phone|default_if_none:'' }}" required placeholder="Phone Number">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
-      <input type="email" class="form-control rounded-3" name="email" value="{{ user.email }}" readonly required>
+      <input type="email" class="form-control rounded-3" name="email" value="{{ user.email|default_if_none:'' }}" readonly required placeholder="Email Address">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
-      <input type="password" class="form-control rounded-3" name="password" value="{{ user.password }}" required>
+      <input type="password" class="form-control rounded-3" name="password" value="{{ user.password|default_if_none:'' }}" required placeholder="Password">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Date of Birth <span class="text-danger">*</span></label>
-      <input type="date" class="form-control rounded-3" name="dob" value="{{ user.dob }}" required>
+      <input type="date" class="form-control rounded-3" name="dob" value="{{ user.dob|default_if_none:'' }}" required placeholder="YYYY-MM-DD">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Birth Place <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="birth_place" value="{{ user.birth_place }}" required>
+      <input type="text" class="form-control rounded-3" name="birth_place" value="{{ user.birth_place|default_if_none:'' }}" required placeholder="Birth Place">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Birth Time <span class="text-danger">*</span></label>
-      <input type="time" class="form-control rounded-3" name="birth_time" value="{{ user.birth_time }}" required>
+      <input type="time" class="form-control rounded-3" name="birth_time" value="{{ user.birth_time|default_if_none:'' }}" required placeholder="HH:MM">
     </div>
     <div class="col-12">
       <label class="form-label fw-semibold">Address <span class="text-danger">*</span></label>
-      <textarea class="form-control rounded-3" name="address" rows="2" required>{{ user.address }}</textarea>
+      <textarea class="form-control rounded-3" name="address" rows="2" required placeholder="Address">{{ user.address|default_if_none:'' }}</textarea>
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">City <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="city" value="{{ user.city }}" required>
+      <input type="text" class="form-control rounded-3" name="city" value="{{ user.city|default_if_none:'' }}" required placeholder="City">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">State <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="state" value="{{ user.state }}" required>
+      <input type="text" class="form-control rounded-3" name="state" value="{{ user.state|default_if_none:'' }}" required   placeholder="State">
     </div>
 <div class="col-md-6">
       <label class="form-label fw-semibold">Height <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="height" value="{{ user.height }}" required>
+      <input type="text" class="form-control rounded-3" name="height" value="{{ user.height|default_if_none:'' }}" required placeholder="Height in cm">
     </div>  
     <div class="col-md-6">
       <label class="form-label fw-semibold">Education <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="education" value="{{ user.education }}" required>
+      <input type="text" class="form-control rounded-3" name="education" value="{{ user.education|default_if_none:'' }}" required placeholder="Education">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Occupation <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="occupation" value="{{ user.occupation }}" required>
+      <input type="text" class="form-control rounded-3" name="occupation" value="{{ user.occupation|default_if_none:'' }}" required placeholder="Occupation">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Father's Name <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="father_name" value="{{ user.father_name }}" required>
+      <input type="text" class="form-control rounded-3" name="father_name" value="{{ user.father_name|default_if_none:'' }}" required placeholder="Father's Name">
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Mother's Name <span class="text-danger">*</span></label>
-      <input type="text" class="form-control rounded-3" name="mother_name" value="{{ user.mother_name }}" required>
+      <input type="text" class="form-control rounded-3" name="mother_name" value="{{ user.mother_name|default_if_none:'' }}" required placeholder="Mother's Name"> 
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Gender <span class="text-danger">*</span></label><br>
@@ -143,11 +143,11 @@
     </div>
     <div class="col-md-6">
       <label class="form-label fw-semibold">Note</label>
-      <textarea class="form-control rounded-3" name="note" rows="1">{{ user.note }}</textarea>
+      <textarea class="form-control rounded-3" name="note" rows="1" placeholder="Add a note...">{{ user.note|default:'' }}</textarea>
     </div>    
     <div class="col-12">
       <label class="form-label fw-semibold">About</label>
-      <textarea class="form-control rounded-3" name="about" rows="3">{{ user.about }}</textarea>
+      <textarea class="form-control rounded-3" name="about" rows="3" placeholder="Tell us about yourself...">{{ user.about|default:'' }}</textarea>
     </div>
     <div class="col-12 text-end">
       <button type="submit" class="btn btn-success mt-3 px-4">Update Profile</button>
@@ -191,39 +191,109 @@
 
 {% elif show_membership %}
       <!-- Membership Plans -->
-      <h4 class="mb-4" id="Membership-profile-section">Choose Your Membership</h4>
-      <div class="row row-cols-1 row-cols-md-3 g-4" >
-        <div class="col">
-          <div class="card border-primary text-center h-100">
-            <div class="card-body">
-              <h5 class="card-title">Silver</h5>
-              <p class="card-text">Basic matchmaking features.</p>
-              <h3>₹399</h3>
-              <button class="btn btn-primary">Buy Now</button>
-            </div>
-</div>
-        </div>
-        <div class="col">
-          <div class="card border-success text-center h-100">
-            <div class="card-body">
-              <h5 class="card-title">Gold</h5>
-              <p class="card-text">Access to premium profiles.</p>
-              <h3>₹499</h3>
-              <button class="btn btn-success">Buy Now</button>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card border-warning text-center h-100">
-            <div class="card-body">
-              <h5 class="card-title">Platinum</h5>
-              <p class="card-text">Priority matchmaking + Support.</p>
-              <h3>₹699</h3>
-              <button class="btn btn-warning">Buy Now</button>
-            </div>
-          </div>
-        </div>
+     <h4 class="mb-4" id="Membership-profile-section">Choose Your Membership</h4>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+
+  <!-- 🔘 Silver Plan -->
+  <div class="col">
+    <div class="card border-primary text-center h-100">
+      <div class="card-body">
+        <h5 class="card-title">Silver</h5>
+        <p class="card-text">Basic matchmaking features.</p>
+        <h3>₹399</h3>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#silverModal">Buy Now</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 🔘 Gold Plan -->
+  <div class="col">
+    <div class="card border-success text-center h-100">
+      <div class="card-body">
+        <h5 class="card-title">Gold</h5>
+        <p class="card-text">Access to premium profiles.</p>
+        <h3>₹499</h3>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#goldModal">Buy Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔘 Platinum Plan -->
+  <div class="col">
+    <div class="card border-warning text-center h-100">
+      <div class="card-body">
+        <h5 class="card-title">Platinum</h5>
+        <p class="card-text">Priority matchmaking + Support.</p>
+        <h3>₹699</h3>
+        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#platinumModal">Buy Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Silver Modal -->
+<div class="modal fade" id="silverModal" tabindex="-1" aria-labelledby="silverModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-primary">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="silverModalLabel">Payment Instructions</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>On this plan, 15 profiles will be shown for one month</p>
+        <img src="{% static 'img/payment.jpg' %}" alt="Silver Plan" style="width: 120px;">
+        <p class="mt-3">कृपया <strong>₹399</strong> का भुगतान करें और उसके बाद <strong>Admin</strong> से संपर्क करें।</p>
+        <p><strong>📞 Mobile:</strong> xxxxxxxxxx</p>
+        <p><strong>📸 Instagram:</strong> 
+          <a href="https://www.instagram.com/getmarry_bhopal_/" target="_blank">@getmarry_bhopal_</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Gold Modal -->
+<div class="modal fade" id="goldModal" tabindex="-1" aria-labelledby="goldModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-success">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="goldModalLabel">Payment Instructions</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>On this plan, 20 profiles will be shown for one month</p>
+        <img src="{% static 'img/payment.jpg' %}" alt="Gold Plan" style="width: 120px;">
+        <p class="mt-3">कृपया <strong>₹499</strong> का भुगतान करें और उसके बाद <strong>Admin</strong> से संपर्क करें।</p>
+        <p><strong>📞 Mobile:</strong> xxxxxxxxxx</p>
+        <p><strong>📸 Instagram:</strong> 
+          <a href="https://www.instagram.com/getmarry_bhopal_/" target="_blank">@getmarry_bhopal_</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Platinum Modal -->
+<div class="modal fade" id="platinumModal" tabindex="-1" aria-labelledby="platinumModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-warning">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="platinumModalLabel">Payment Instructions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>On this plan, 30 profiles will be shown for one month</p>
+        <img src="{% static 'img/payment.jpg' %}" alt="Platinum Plan" style="width: 120px;">
+        <p class="mt-3">कृपया <strong>₹699</strong> का भुगतान करें और उसके बाद <strong>Admin</strong> से संपर्क करें।</p>
+        <p><strong>📞 Mobile:</strong> xxxxxxxxxx</p>
+        <p><strong>📸 Instagram:</strong> 
+          <a href="https://www.instagram.com/getmarry_bhopal_/" target="_blank">@getmarry_bhopal_</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
       <a href="{% url 'user_dashboard' %}" class="btn btn-secondary mt-4">← Back to Profile</a>
 
 <!-- Example for Boys Profile -->
@@ -249,6 +319,7 @@
   </form>
 
   <div class="row">
+{% if boys_profiles %}
   {% for boy in boys_profiles %}
     <div class="col-md-4 mb-4">
       <div class="card border-0 shadow rounded-4 h-100">
@@ -302,17 +373,14 @@
 
               </ul>
 
-<h6 class="text-success">More Photos</h6>
-<div class="d-flex flex-wrap gap-2">
-  {% for photo in boy.extra_photos.all %}
-    <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
-  {% empty %}
-    <p class="text-muted">No additional photos.</p>
-  {% endfor %}
-</div>
-
-
-
+            <h6 class="text-success">More Photos</h6>
+            <div class="d-flex flex-wrap gap-2">
+              {% for photo in boy.extra_photos.all %}
+                <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+              {% empty %}
+                <p class="text-muted">No additional photos.</p>
+              {% endfor %}
+            </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -321,7 +389,13 @@
         </div>
       </div>
     </div>
-  {% endfor %}
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-warning text-center">
+      कोई प्रोफ़ाइल नहीं मिली। कृपया प्रतीक्षा करें जब तक एडमिन स्वीकृति नहीं देता। <br>
+      <a href="https://www.instagram.com/getmarry_bhopal_/">Contact Admin for more details...</a>
+    </div>
+  {% endif %}
 </div>
 
       
@@ -343,79 +417,85 @@
         <div class="col-md-2"><button class="btn btn-primary w-100">Search</button></div>
       </form>
 
-      <div class="row">
-        {% for girl in girls_profiles %}
-          <div class="col-md-4 mb-4">
-            <div class="card border-0 shadow rounded-4 h-100">
-              {% if girl.image %}
-                <img src="{{ girl.image.url }}" class="card-img-top rounded-top" style="height:200px; object-fit:cover;" alt="{{ girl.name }}">
-              {% endif %}
-              <div class="card-body">
-                <h5 class="card-title fw-bold">{{ girl.name }}  {{ girl.caste }}</h5>
-                <p><strong>Email:</strong> {{ girl.email }}</p>
-                <p><strong>Phone:</strong> {{ girl.phone }}</p>
-                <p><strong>City:</strong> {{ girl.city }}, {{ girl.state }}</p>
-                <p><strong>Gender:</strong> {{ girl.gender }}</p>
-                <button class="btn btn-outline-success mt-2 w-100" data-bs-toggle="modal" data-bs-target="#girlModal{{ girl.id }}">More Details</button>
+     <div class="row">
+  {% if girls_profiles %}
+    {% for girl in girls_profiles %}
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow rounded-4 h-100">
+          {% if girl.image %}
+            <img src="{{ girl.image.url }}" class="card-img-top rounded-top" style="height:200px; object-fit:cover;" alt="{{ girl.name }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ girl.name }} {{ girl.caste }}</h5>
+            <p><strong>Email:</strong> {{ girl.email }}</p>
+            <p><strong>Phone:</strong> {{ girl.phone }}</p>
+            <p><strong>City:</strong> {{ girl.city }}, {{ girl.state }}</p>
+            <p><strong>Gender:</strong> {{ girl.gender }}</p>
+            <button class="btn btn-outline-success mt-2 w-100" data-bs-toggle="modal" data-bs-target="#girlModal{{ girl.id }}">More Details</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="girlModal{{ girl.id }}" tabindex="-1" aria-labelledby="girlModalLabel{{ girl.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content border-success rounded-4 shadow">
+            <div class="modal-header bg-success text-white">
+              <h5 class="modal-title" id="girlModalLabel{{ girl.id }}">{{ girl.name }}'s Profile</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body row">
+              <div class="col-md-5 text-center">
+                {% if girl.image %}
+                  <img src="{{ girl.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ girl.name }}">
+                {% endif %}
+              </div>
+              <div class="col-md-7">
+                <ul class="list-group list-group-flush mb-3">
+                  <li class="list-group-item"><strong>Name:</strong> {{ girl.name }}</li>
+                  <li class="list-group-item"><strong>Caste:</strong> {{ girl.caste }}</li>
+                  <li class="list-group-item"><strong>Email:</strong> {{ girl.email }}</li>
+                  <li class="list-group-item"><strong>Phone:</strong> {{ girl.phone }}</li>
+                  <li class="list-group-item"><strong>City:</strong> {{ girl.city }}</li>
+                  <li class="list-group-item"><strong>State:</strong> {{ girl.state }}</li>
+                  <li class="list-group-item"><strong>Gender:</strong> {{ girl.gender }}</li>
+                  <li class="list-group-item"><strong>Date of Birth:</strong> {{ girl.dob }}</li>
+                  <li class="list-group-item"><strong>Birth Place:</strong> {{ girl.birth_place }}</li>
+                  <li class="list-group-item"><strong>Birth Time:</strong> {{ girl.birth_time }}</li>
+                  <li class="list-group-item"><strong>About:</strong> {{ girl.about }}</li>
+                  <li class="list-group-item"><strong>Height:</strong> {{ girl.height }}</li>
+                  <li class="list-group-item"><strong>Note:</strong> {{ girl.note }}</li>
+                  <li class="list-group-item"><strong>Education:</strong> {{ girl.education }}</li>
+                  <li class="list-group-item"><strong>Occupation:</strong> {{ girl.occupation }}</li>
+                  <li class="list-group-item"><strong>Father's Name:</strong> {{ girl.father_name }}</li>
+                  <li class="list-group-item"><strong>Mother's Name:</strong> {{ girl.mother_name }}</li>
+                </ul>
+                <h6 class="text-success">More Photos</h6>
+                <div class="d-flex flex-wrap gap-2">
+                  {% for photo in girl.extra_photos.all %}
+                    <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
+                  {% empty %}
+                    <p class="text-muted">No additional photos.</p>
+                  {% endfor %}
+                </div>
               </div>
             </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
           </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-warning text-center">
+      कोई प्रोफ़ाइल नहीं मिली। कृपया प्रतीक्षा करें जब तक एडमिन स्वीकृति नहीं देता। <br>
+      <a href="https://www.instagram.com/getmarry_bhopal_/">Contact Admin for more details...</a>
 
-          <!-- Modal for each girl -->
-          <div class="modal fade" id="girlModal{{ girl.id }}" tabindex="-1" aria-labelledby="girlModalLabel{{ girl.id }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-              <div class="modal-content border-success rounded-4 shadow">
-                <div class="modal-header bg-success text-white">
-                  <h5 class="modal-title" id="girlModalLabel{{ girl.id }}">{{ girl.name }}'s Profile</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body row">
-                  <div class="col-md-5 text-center">
-                    {% if girl.image %}
-                      <img src="{{ girl.image.url }}" class="img-fluid rounded-4 border shadow-sm" style="max-height:300px;" alt="{{ girl.name }}">
-                    {% endif %}
-                  </div>
-                  <div class="col-md-7">
-                    <ul class="list-group list-group-flush mb-3">
-                      <li class="list-group-item"><strong>Name:</strong> {{ girl.name }}</li>
-                      <li class="list-group-item"><strong>Caste:</strong> {{ girl.caste }}</li>
-                      <li class="list-group-item"><strong>Email:</strong> {{ girl.email }}</li>
-                      <li class="list-group-item"><strong>Phone:</strong> {{ girl.phone }}</li>
-                      <li class="list-group-item"><strong>City:</strong> {{ girl.city }}</li>
-                      <li class="list-group-item"><strong>State:</strong> {{ girl.state }}</li>
-                      <li class="list-group-item"><strong>Gender:</strong> {{ girl.gender }}</li>
-                      <li class="list-group-item"><strong>Date of Birth:</strong> {{ girl.dob }}</li>
-                      <li class="list-group-item"><strong>Birth Place:</strong> {{ girl.birth_place }}</li>
-                      <li class="list-group-item"><strong>Birth Time:</strong> {{ girl.birth_time }}</li>
-                      <li class="list-group-item"><strong>About:</strong> {{ girl.about }}</li>
-                      <li class="list-group-item"><strong>Height:</strong> {{ girl.height }}</li>
-                      <li class="list-group-item"><strong>Note:</strong> {{ girl.note }}</li>
-                      <li class="list-group-item"><strong>Education:</strong> {{ girl.education }}</li>
-                      <li class="list-group-item"><strong>Occupation:</strong> {{ girl.occupation }}</li>
-                      <li class="list-group-item"><strong>Father's Name:</strong> {{ girl.father_name }}</li>
-                      <li class="list-group-item"><strong>Mother's Name:</strong> {{ girl.mother_name }}</li>
-                    </ul>
-<h6 class="text-success">More Photos</h6>
-<div class="d-flex flex-wrap gap-2">
-  {% for photo in girl.extra_photos.all %}
-    <img src="{{ photo.image.url }}" class="img-thumbnail" style="width:100px;height:100px;object-fit:cover;" alt="Photo">
-  {% empty %}
-    <p class="text-muted">No additional photos.</p>
- {% endfor %}
+    </div>
+  {% endif %}
 </div>
 
-
-                    
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
 
       <!-- Example for Disabled Profile -->
 {% elif show_disabled %}
@@ -441,6 +521,8 @@
   </form>
 
   <div class="row">
+{% if disabled_profiles %}
+
   {% for disabled in disabled_profiles %}
     <div class="col-md-4 mb-4">
       <div class="card border-0 shadow rounded-4 h-100">
@@ -510,7 +592,14 @@
         </div>
       </div>
     </div>
-  {% endfor %}
+     {% endfor %}
+  {% else %}
+    <div class="alert alert-warning text-center">
+      कोई प्रोफ़ाइल नहीं मिली। कृपया प्रतीक्षा करें जब तक एडमिन स्वीकृति नहीं देता। <br>
+      <a href="https://www.instagram.com/getmarry_bhopal_/">Contact Admin for more details...</a>
+
+    </div>
+  {% endif %}
 </div>
 
 <!-- Example for Disabled Profile -->
@@ -538,6 +627,8 @@
   </form>
 
   <div class="row">
+{% if divorced_profiles %}
+ 
   {% for divorced in divorced_profiles %}
     <div class="col-md-4 mb-4">
       <div class="card border-0 shadow rounded-4 h-100">
@@ -607,9 +698,15 @@
         </div>
       </div>
     </div>
-  {% endfor %}
-</div>
+      {% endfor %}
+  {% else %}
+    <div class="alert alert-warning text-center">
+      कोई प्रोफ़ाइल नहीं मिली। कृपया प्रतीक्षा करें जब तक एडमिन स्वीकृति नहीं देता। <br>
+      <a href="https://www.instagram.com/getmarry_bhopal_/">Contact Admin for more details...</a>
 
+    </div>
+  {% endif %}
+</div>
     {% else %}
       <!-- ✅ Default: User Profile Display with Uploaded Photos -->
       <div class="card shadow-lg border-0 rounded-4 p-3 mx-auto" style="max-width: 600px;">

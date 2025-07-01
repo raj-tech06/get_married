@@ -110,7 +110,9 @@ def logout_view(request):
 
 
 # ----------ADMIN DASHBOARD og--------------------
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect 
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from .models import GirlsProfile, BoysProfile, DisabledProfile, DivorcedProfile, MyUser, ProfilePermission
 from django.contrib import messages
 from itertools import chain
@@ -118,10 +120,14 @@ from itertools import chain
 def admin_dashboard(request):
     if request.session.get('user_email') != 'admin@gmail.com':
         return redirect('user_dashboard')
+    
+        # ✅ Auto-redirect to admin section if no 'view' param
+    if 'view' not in request.GET:
+        return HttpResponseRedirect(f"{reverse('admin_dashboard')}?view=admin")
 
     user_name = request.session.get('user_name')
 
-    # ✅ Handle form: Assign profiles to user
+    # ✅ Handle profile assignment
     if request.method == 'POST' and 'assign_profiles' in request.POST:
         target_email = request.POST.get('target_user_email')
         category = request.POST.get('category')
@@ -132,7 +138,6 @@ def admin_dashboard(request):
         except MyUser.DoesNotExist:
             messages.error(request, "User not found.")
         else:
-            # Remove old ones first for the same category
             ProfilePermission.objects.filter(user=target_user, category=category).delete()
 
             for email in selected_emails:
@@ -140,7 +145,7 @@ def admin_dashboard(request):
 
             messages.success(request, "Profiles assigned successfully.")
 
-    # ✅ Handle form: Add new profile
+    # ✅ Handle adding new profile
     elif request.method == 'POST':
         name = request.POST.get('name')
         caste = request.POST.get('lastname')
@@ -204,17 +209,15 @@ def admin_dashboard(request):
         DivorcedProfile.objects.all()
     ))
 
-    # ✅ Handle filters (GET)
+    # 🔍 Search & filters
     user_search = request.GET.get('user_search', '')
     profile_email_search = request.GET.get('profile_email_search', '')
     caste_search = request.GET.get('caste_search', '').lower()
 
-    # 🔍 Filter users
     filtered_users = MyUser.objects.all()
     if user_search:
         filtered_users = filtered_users.filter(email__icontains=user_search)
 
-    # 🔍 Filter profiles
     if profile_email_search:
         filtered_profiles = [p for p in all_profiles if profile_email_search.lower() in p.email.lower()]
     elif caste_search:
@@ -222,29 +225,54 @@ def admin_dashboard(request):
     else:
         filtered_profiles = all_profiles
 
-    # View type filters
+    # 🔁 View switch
     view_type = request.GET.get('view', '')
 
+    if view_type == 'girls':
+        filtered_profiles = GirlsProfile.objects.all()
+    elif view_type == 'boys':
+        filtered_profiles = BoysProfile.objects.all()
+    elif view_type == 'disabled':
+        filtered_profiles = DisabledProfile.objects.all()
+    elif view_type == 'divorced':
+        filtered_profiles = DivorcedProfile.objects.all()
+    elif view_type == 'users':
+        filtered_users = MyUser.objects.all()
+
+    # ✅ Seen Button Data for Each User (Modal use)
+    user_profile_data = []
+    for user in MyUser.objects.all():
+        assigned_emails = ProfilePermission.objects.filter(user=user).values_list('profile_email', flat=True)
+
+        profiles = list(chain(
+            GirlsProfile.objects.filter(email__in=assigned_emails),
+            BoysProfile.objects.filter(email__in=assigned_emails),
+            DisabledProfile.objects.filter(email__in=assigned_emails),
+            DivorcedProfile.objects.filter(email__in=assigned_emails),
+        ))
+
+        user_profile_data.append({
+            'user': user,
+            'profiles': profiles
+        })
+
+    # ✅ Final context
     context = {
         'user_name': user_name,
         'users': MyUser.objects.all(),
         'all_profiles': all_profiles,
         'filtered_users': filtered_users,
         'filtered_profiles': filtered_profiles,
+        'user_profile_data': user_profile_data,  # 🟢 Modal ke liye yeh use ho raha
+            # ✅ Yeh naya part
+        'girls': GirlsProfile.objects.all(),
+        'boys': BoysProfile.objects.all(),
+        'disabled': DisabledProfile.objects.all(),
+        'divorced': DivorcedProfile.objects.all(),
     }
 
-    if view_type == 'girls':
-        context['girls'] = GirlsProfile.objects.all()
-    elif view_type == 'boys':
-        context['boys'] = BoysProfile.objects.all()
-    elif view_type == 'disabled':
-        context['disabled'] = DisabledProfile.objects.all()
-    elif view_type == 'divorced':
-        context['divorced'] = DivorcedProfile.objects.all()
-    elif view_type == 'users':
-        context['users'] = MyUser.objects.all()
-
     return render(request, 'admin_dashboard.html', context)
+
 
 
 
@@ -344,13 +372,15 @@ def user_dashboard(request):
         }
 
         if category == 'girls':
-            GirlsProfile.objects.create(**profile_data)
+            GirlsProfile.objects.create(**profile_data, is_approved=True)
         elif category == 'boys':
-            BoysProfile.objects.create(**profile_data)
+            BoysProfile.objects.create(**profile_data, is_approved=True)
         elif category == 'disabled':
-            DisabledProfile.objects.create(**profile_data)
+            DisabledProfile.objects.create(**profile_data, is_approved=True)
         elif category == 'divorced':
-            DivorcedProfile.objects.create(**profile_data)
+            DivorcedProfile.objects.create(**profile_data, is_approved=True)
+
+
 
         return redirect('user_dashboard')
 
@@ -376,7 +406,7 @@ def user_dashboard(request):
 
 
     # === GIRLS FILTER ===
-    girls_profiles = GirlsProfile.objects.filter(email__in=allowed_girl_emails)
+    girls_profiles = GirlsProfile.objects.filter(email__in=allowed_girl_emails, is_approved=True)
     caste_choices_girls = GirlsProfile.objects.values_list('caste', flat=True).distinct()
     search_query_girls = request.GET.get('search', '') if show_girls else ''
     selected_caste_girls = request.GET.get('caste', '') if show_girls else ''
@@ -549,11 +579,21 @@ from django.shortcuts import get_object_or_404, redirect
 from .models import MyUser
 from django.contrib import messages
 
+# def delete_user(request, user_id):
+#     if request.method == 'POST':
+#         user = get_object_or_404(MyUser, id=user_id)
+#         user.delete()
+#         messages.success(request, "User deleted successfully.")
+#     return redirect('admin_dashboard')
 def delete_user(request, user_id):
-    if request.method == 'POST':
-        user = get_object_or_404(MyUser, id=user_id)
-        user.delete()
-        messages.success(request, "User deleted successfully.")
+    user = get_object_or_404(MyUser, id=user_id)
+    
+    if user.email == 'admin@gmail.com':
+        messages.error(request, "Admin account cannot be deleted.")
+        return redirect('admin_dashboard')
+    
+    user.delete()
+    messages.success(request, "User deleted successfully.")
     return redirect('admin_dashboard')
 
 
@@ -573,21 +613,89 @@ from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from .models import MyUser
 
+# def block_user(request, user_id):
+#     user = get_object_or_404(MyUser, id=user_id)
+#     user.is_blocked = not user.is_blocked  # Toggle block/unblock
+#     user.save()
+#     if user.is_blocked:
+#         messages.success(request, f"{user.username} has been blocked.")
+#     else:
+#         messages.success(request, f"{user.username} has been unblocked.")
+#     return redirect('/admin_dashboard/?view=users')
+
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from .models import MyUser
+
 def block_user(request, user_id):
     user = get_object_or_404(MyUser, id=user_id)
-    user.is_blocked = not user.is_blocked  # Toggle block/unblock
+
+    if user.email == 'admin@gmail.com':
+        messages.error(request, "Admin cannot be blocked.")
+        return redirect('/admin_dashboard/?view=users')
+
+    user.is_blocked = not user.is_blocked  # ✅ Toggle block/unblock
     user.save()
+
     if user.is_blocked:
         messages.success(request, f"{user.username} has been blocked.")
     else:
         messages.success(request, f"{user.username} has been unblocked.")
+
     return redirect('/admin_dashboard/?view=users')
 
 
-
-# =========================================other========================================================
-
+# =========================================unassign_profile========================================================
 
 
+# from django.http import HttpResponseRedirect
+# from django.urls import reverse
+
+# def unassign_profile(request, user_id, email):
+#     if request.session.get('user_email') != 'admin@gmail.com':
+#         return redirect('user_dashboard')
+
+#     try:
+#         user = MyUser.objects.get(id=user_id)
+#         ProfilePermission.objects.filter(user=user, profile_email=email).delete()
+#         messages.success(request, "Profile unassigned successfully.")
+#     except:
+#         messages.error(request, "Something went wrong.")
+
+#     return HttpResponseRedirect(reverse('admin_dashboard') + '?view=users')
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+from .models import ProfilePermission
+
+@csrf_exempt
+def bulk_unassign_profiles(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        selected_emails = request.POST.getlist('selected_profiles')
+
+        if user_id and selected_emails:
+            ProfilePermission.objects.filter(user_id=user_id, profile_email__in=selected_emails).delete()
+            messages.success(request, "Selected profiles unassigned successfully.")
+
+    return redirect('admin_dashboard')
 
 
+
+
+
+# --------------------- FORGOT PASSWORD ---------------------
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import MyUser
+
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = MyUser.objects.get(email=email)
+            # 🛠 Replace this with real email sending or OTP flow
+            messages.success(request, f"Password reset link has been sent to {email}. (simulate)")
+        except MyUser.DoesNotExist:
+            messages.error(request, "No user with this email exists.")
+    
+    return render(request, 'forgot_password.html')
