@@ -44,6 +44,10 @@
     <div class="col-md-9 p-4" id="admin-section">
       <div class="text-center mb-4">
         <h2>Welcome Admin: <span class="text-success">{{ user_name }}</span></h2>
+        <p class="text-muted">Manage user profiles and settings from this dashboard.</p>
+        <hr>
+        <p class="text-muted">Use the sidebar to navigate through different sections.</p>
+        <hr>
       </div>
 
       <div id="form-section" class="card shadow-lg border-0 rounded-4 p-4 bg-light" >
@@ -168,7 +172,6 @@
               </div>
             </div>
           </form>
-
           {% elif request.GET.view == "users" %}
 
 
@@ -479,8 +482,10 @@
         {% endif %}
       </div>
     </div>
+
   </div>
 </div>
+
 
 
 {% endblock %}
