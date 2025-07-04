@@ -4,10 +4,8 @@
 
 
 {% block content %}
-
 <div class="container-fluid">
   <div class="row" style="min-height: 90vh;">
-<!-- Admin Dashboard or any template -->
 
 {% if messages %}
   {% for message in messages %}
@@ -19,10 +17,10 @@
 {% endif %}
 
     <!-- Sidebar -->
-    <div class="col-md-3 bg-light p-4 shadow-sm">
+    <div class="col-12 col-md-3 bg-light p-4 shadow-sm mb-3 mb-md-0">
       <h4 class="text-center mb-4">Admin Panel</h4>
       <ul class="nav flex-column">
-          <li class="nav-item mb-3">
+        <li class="nav-item mb-3">
           <a href="?view=admin#admin-section" class="btn btn-primary w-100">Admin</a>
         </li>
         <li class="nav-item mb-3">
@@ -41,18 +39,51 @@
     </div>
 
     <!-- Main Content -->
-    <div class="col-md-9 p-4" id="admin-section">
-      <div class="text-center mb-4">
-        <h2>Welcome Admin: <span class="text-success">{{ user_name }}</span></h2>
-        <p class="text-muted">Manage user profiles and settings from this dashboard.</p>
-        <hr>
-        <p class="text-muted">Use the sidebar to navigate through different sections.</p>
-        <hr>
-      </div>
+    <div class="col-12 col-md-9 p-4" id="admin-section">
+
+    <!-- Header: Welcome + Bell (right aligned, responsive) -->
+<div class="d-flex flex-column flex-md-row justify-content-md-end align-items-md-center gap-2 gap-md-4 p-2 rounded-4 shadow-sm bg-transparent mb-3 text-md-end text-start">
+
+  <!-- Welcome Text -->
+  <h4 class="m-0">
+    Welcome Admin: <span class="text-success">{{ user_name }}</span>
+  </h4>
+
+  <!-- Bell icon with dropdown -->
+  <div class="dropdown">
+    <a href="#" class="text-decoration-none position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-bell fs-4"></i>
+      {% if unread_count > 0 %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{ unread_count }}
+        </span>
+      {% endif %}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end p-2" style="width: 200px;">
+      {% for n in unread_notifications %}
+        <li>
+          <a href="{% url 'mark_notification_read' n.id %}" class="dropdown-item small">
+            📧 {{ n.email }}
+          </a>
+        </li>
+      {% empty %}
+        <li><span class="dropdown-item text-muted small">No new notifications</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</div>
+
+<p class="text-muted">
+  Manage user profiles and settings from this dashboard. Use the sidebar to navigate through different sections.
+</p>
+<hr>
 
       <div id="form-section" class="card shadow-lg border-0 rounded-4 p-4 bg-light" >
         {% if request.GET.view == "add" or not request.GET.view %}
           <h4 class="mb-4 text-success fw-bold" id="add-section">➕ Add New User Profile</h4>
+          <hr class="my-2">
+
 <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
@@ -175,15 +206,17 @@
           {% elif request.GET.view == "users" %}
 
 
-<hr class="my-5">
 
 <h4 class="mb-3 text-success" id="assign-section">🎯 Assign Profiles to Specific User</h4>
+<hr class="my-2">
+
 <form method="POST">
   {% csrf_token %}
   <input type="hidden" name="assign_profiles" value="1">
   <div class="row g-3 align-items-center mb-3">
-
     <div class="col-md-4">
+    <br>
+
       <label class="form-label fw-semibold">Select User (By Email)</label>
       <select name="target_user_email" class="form-select" required>
         <option disabled selected>-- Choose User --</option>
@@ -192,8 +225,9 @@
         {% endfor %}
       </select>
     </div>
-
     <div class="col-md-4">
+    <br>
+
       <label class="form-label fw-semibold">Category</label>
       <select name="category" class="form-select" required>
         <option disabled selected>-- Choose Category --</option>
@@ -243,6 +277,8 @@
 
 
           <h4 class="mb-3 text-primary" id="users-section">👥 All Registered Users</h4>
+          <hr class="my-2">
+
 <a href="?view=all" class="btn btn-primary mb-3 rounded-pill">⬅ Back to All Profiles</a>
 
 <div class="row g-4">
@@ -333,6 +369,8 @@
 
         {% elif request.GET.view == "all" %}
           <h4 class="mb-4 fw-bold text-primary" id="all-section">🌐 All Profiles</h4>
+          <hr class="my-2">
+
           <div class="row g-4">
             <div class="col-md-6 col-lg-3">
               <a href="?view=girls" class="text-decoration-none text-dark">

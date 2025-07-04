@@ -32,10 +32,13 @@ urlpatterns = [
     path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),  # changed
     path('block_user/<int:user_id>/', views.block_user, name='block_user'),  # changed
 
-    # path('unassign_profile/<int:user_id>/<str:email>/', views.unassign_profile, name='unassign_profile'),
     path('bulk_unassign/', views.bulk_unassign_profiles, name='bulk_unassign_profiles'),
 
     path('forgot-password/', views.forgot_password, name='forgot_password'),
+
+    
+    path('mark-notification-read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
+
 
 
 

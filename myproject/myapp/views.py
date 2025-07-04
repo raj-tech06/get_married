@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import MyUser, BoysProfile, GirlsProfile, DisabledProfile, DivorcedProfile
+from .models import RegistrationNotification
 
 
 # --------------------- REGISTER ---------------------
@@ -14,6 +15,9 @@ def register_view(request):
         if password != confirm_password:
             messages.error(request, "Passwords do not match!")
             return redirect('register')
+        
+        # ✅ Notification save
+        RegistrationNotification.objects.create(email=email)
 
         # Check if email is blocked
         blocked_email = MyUser.objects.filter(email=email, is_blocked=True).exists()
@@ -256,6 +260,10 @@ def admin_dashboard(request):
             'profiles': profiles
         })
 
+          # 🔔 Notifications context
+        unread_notifications = RegistrationNotification.objects.filter(is_read=False).order_by('-created_at')
+        unread_count = unread_notifications.count()
+
     # ✅ Final context
     context = {
         'user_name': user_name,
@@ -269,6 +277,11 @@ def admin_dashboard(request):
         'boys': BoysProfile.objects.all(),
         'disabled': DisabledProfile.objects.all(),
         'divorced': DivorcedProfile.objects.all(),
+        'unread_notifications': unread_notifications,
+        'unread_count': unread_count,
+
+
+        
     }
 
     return render(request, 'admin_dashboard.html', context)
@@ -579,22 +592,16 @@ from django.shortcuts import get_object_or_404, redirect
 from .models import MyUser
 from django.contrib import messages
 
-# def delete_user(request, user_id):
-#     if request.method == 'POST':
-#         user = get_object_or_404(MyUser, id=user_id)
-#         user.delete()
-#         messages.success(request, "User deleted successfully.")
-#     return redirect('admin_dashboard')
 def delete_user(request, user_id):
     user = get_object_or_404(MyUser, id=user_id)
     
     if user.email == 'admin@gmail.com':
         messages.error(request, "Admin account cannot be deleted.")
-        return redirect('admin_dashboard')
+        return redirect('/admin_dashboard/?view=users')
     
     user.delete()
     messages.success(request, f"User '{user.username}' deleted successfully.")
-    return redirect('admin_dashboard')
+    return redirect('/admin_dashboard/?view=users')
 
 
 
@@ -613,15 +620,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from .models import MyUser
 
-# def block_user(request, user_id):
-#     user = get_object_or_404(MyUser, id=user_id)
-#     user.is_blocked = not user.is_blocked  # Toggle block/unblock
-#     user.save()
-#     if user.is_blocked:
-#         messages.success(request, f"{user.username} has been blocked.")
-#     else:
-#         messages.success(request, f"{user.username} has been unblocked.")
-#     return redirect('/admin_dashboard/?view=users')
+
 
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
@@ -699,3 +698,16 @@ def forgot_password(request):
             messages.error(request, "No user with this email exists.")
     
     return render(request, 'forgot_password.html')
+
+
+
+# --------------------- MARK NOTIFICATION AS READ ---------------------
+
+
+
+def mark_notification_read(request, notification_id):
+    notification = RegistrationNotification.objects.get(id=notification_id)
+    notification.is_read = True
+    notification.save()
+    return redirect('admin_dashboard')
+

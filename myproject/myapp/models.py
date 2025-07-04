@@ -200,3 +200,17 @@ class ProfilePermission(models.Model):
         ('divorced', 'Divorced')
     ])
     profile_email = models.EmailField()  # Email of the profile (like a girl/boy/etc)
+
+
+
+
+
+
+class RegistrationNotification(models.Model):
+    email = models.EmailField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.email} - {'Read' if self.is_read else 'Unread'}"
+
