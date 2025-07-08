@@ -8,38 +8,41 @@ from .models import RegistrationNotification
 def register_view(request):
     if request.method == "POST":
         username = request.POST.get('username')
-        email = request.POST.get('email')
+        number = request.POST.get('number')
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
+
+        if len(number) != 10 or not number.isdigit():
+            messages.error(request, "Mobile number must be exactly 10 digits.")
+            return redirect('register')
+
 
         if password != confirm_password:
             messages.error(request, "Passwords do not match!")
             return redirect('register')
-        
-        # ✅ Notification save
-        RegistrationNotification.objects.create(email=email)
 
-        # Check if email is blocked
-        blocked_email = MyUser.objects.filter(email=email, is_blocked=True).exists()
-        if blocked_email:
-            messages.error(request, "This email is blocked. You cannot register.")
+        # ✅ Notification save (optional)
+        RegistrationNotification.objects.create(RRnumber=number,username=username)
+
+        # ✅ Check if number is blocked
+        if MyUser.objects.filter(phone=number, is_blocked=True).exists():
+            messages.error(request, "This number is blocked. You cannot register.")
             return redirect('register')
 
-        # Check if user already exists
-        existing_user = MyUser.objects.filter(email=email).first()
+        # ✅ Check if user exists
+        existing_user = MyUser.objects.filter(phone=number).first()
         if existing_user:
-            if email == 'admin@gmail.com':
-                # ✅ Update password for admin
+            if number == 'admin':
                 existing_user.password = password
                 existing_user.save()
                 messages.success(request, "Admin password updated successfully!")
                 return redirect('login_user')
             else:
-                messages.error(request, "Email already registered!")
+                messages.error(request, "This number is already registered!")
                 return redirect('register')
 
-        # Save new user
-        MyUser.objects.create(username=username, email=email, password=password)
+        # ✅ Save new user
+        MyUser.objects.create(username=username, phone=number, password=password)
         messages.success(request, "Registration successful! Please log in.")
         return redirect('login_user')
 
@@ -62,40 +65,34 @@ def register_view(request):
 
 
 
-
-
 # --------------------- LOGIN ---------------------
+
 def login_user(request):
     if request.method == "POST":
-        email = request.POST.get('email')
+        number = request.POST.get('number')
         password = request.POST.get('password')
 
         try:
-            user = MyUser.objects.get(email=email)
+            user = MyUser.objects.get(phone=number)
 
-            # Block check
             if user.is_blocked:
-                messages.error(request, "Your account has been blocked. Contact admin.")
+                messages.error(request, "Your account is blocked.")
                 return redirect('login_user')
 
             if user.password == password:
                 request.session['user_id'] = user.id
-                request.session['user_email'] = user.email
+                request.session['user_phone'] = user.phone
                 request.session['user_name'] = user.username
 
-                if email == 'admin@gmail.com':
+                if number == '7987496842':
                     return redirect('admin_dashboard')
                 return redirect('user_dashboard')
             else:
                 messages.error(request, "Incorrect password")
         except MyUser.DoesNotExist:
-            messages.error(request, "User does not exist")
+            messages.error(request, "User not found")
 
     return render(request, 'login.html')
-
-
-
-
 
 
 
@@ -122,8 +119,9 @@ from django.contrib import messages
 from itertools import chain
 
 def admin_dashboard(request):
-    if request.session.get('user_email') != 'admin@gmail.com':
+    if request.session.get('user_phone') != '7987496842':
         return redirect('user_dashboard')
+
     
         # ✅ Auto-redirect to admin section if no 'view' param
     if 'view' not in request.GET:
@@ -167,6 +165,7 @@ def admin_dashboard(request):
         phone = request.POST.get('phone')
         address = request.POST.get('address')
         city = request.POST.get('city')
+        password=request.POST.get('password')
         state = request.POST.get('state')
         gender = request.POST.get('gender')
         category = request.POST.get('category')
@@ -185,6 +184,7 @@ def admin_dashboard(request):
             'occupation': occupation,
             'father_name': father_name,
             'mother_name': mother_name,
+            'password' : password,
             'email': email,
             'phone': phone,
             'address': address,
@@ -193,15 +193,44 @@ def admin_dashboard(request):
             'gender': gender,
             'image': image,
         }
+      
+        profile_data1 = {
+            'username': name,
+            'caste': caste,
+            'dob': dob,
+            'birth_place': birth_place,
+            'birth_time': birth_time,
+            'about': about,
+            'password' : password,
+            'height': height,
+            'note': note,
+            'education': education,
+            'occupation': occupation,
+            'father_name': father_name,
+            'mother_name': mother_name,
+            'email': email,
+            'phone': phone,
+            'address': address,
+            'city': city,
+            'state': state,
+            'gender': gender,
+            'profile_image': image,
+        }
+
+        MyUser.objects.create(**profile_data1)
+        
+       
+
+        # ✅ Save in the correct profile model based on category
 
         if category == 'girls':
-            GirlsProfile.objects.create(**profile_data)
+            GirlsProfile.objects.create(**profile_data, is_approved=True)
         elif category == 'boys':
-            BoysProfile.objects.create(**profile_data)
+            BoysProfile.objects.create(**profile_data, is_approved=True)
         elif category == 'disabled':
-            DisabledProfile.objects.create(**profile_data)
+            DisabledProfile.objects.create(**profile_data, is_approved=True)
         elif category == 'divorced':
-            DivorcedProfile.objects.create(**profile_data)
+            DivorcedProfile.objects.create(**profile_data, is_approved=True)
 
         return redirect('admin_dashboard')
 
@@ -243,6 +272,13 @@ def admin_dashboard(request):
     elif view_type == 'users':
         filtered_users = MyUser.objects.all()
 
+
+              # 🔔 Notifications context
+    unread_notifications = RegistrationNotification.objects.filter(is_read=False).order_by('-created_at')
+    unread_count = unread_notifications.count()    
+
+
+
     # ✅ Seen Button Data for Each User (Modal use)
     user_profile_data = []
     for user in MyUser.objects.all():
@@ -260,10 +296,7 @@ def admin_dashboard(request):
             'profiles': profiles
         })
 
-          # 🔔 Notifications context
-        unread_notifications = RegistrationNotification.objects.filter(is_read=False).order_by('-created_at')
-        unread_count = unread_notifications.count()
-
+   
     # ✅ Final context
     context = {
         'user_name': user_name,
@@ -593,19 +626,19 @@ from .models import MyUser
 from django.contrib import messages
 
 def delete_user(request, user_id):
-    user = get_object_or_404(MyUser, id=user_id)
-    
-    if user.email == 'admin@gmail.com':
+    user = MyUser.objects.filter(id=user_id).first()
+
+    if not user:
+        messages.error(request, "User already deleted or does not exist.")
+        return redirect('/admin_dashboard/?view=users')
+
+    if user.phone == '7987496842':
         messages.error(request, "Admin account cannot be deleted.")
         return redirect('/admin_dashboard/?view=users')
-    
+
     user.delete()
     messages.success(request, f"User '{user.username}' deleted successfully.")
     return redirect('/admin_dashboard/?view=users')
-
-
-
-
 
 
 
@@ -629,7 +662,7 @@ from .models import MyUser
 def block_user(request, user_id):
     user = get_object_or_404(MyUser, id=user_id)
 
-    if user.email == 'admin@gmail.com':
+    if user.phone == '7987496842':
         messages.error(request, "Admin cannot be blocked.")
         return redirect('/admin_dashboard/?view=users')
 
@@ -647,21 +680,6 @@ def block_user(request, user_id):
 # =========================================unassign_profile========================================================
 
 
-# from django.http import HttpResponseRedirect
-# from django.urls import reverse
-
-# def unassign_profile(request, user_id, email):
-#     if request.session.get('user_email') != 'admin@gmail.com':
-#         return redirect('user_dashboard')
-
-#     try:
-#         user = MyUser.objects.get(id=user_id)
-#         ProfilePermission.objects.filter(user=user, profile_email=email).delete()
-#         messages.success(request, "Profile unassigned successfully.")
-#     except:
-#         messages.error(request, "Something went wrong.")
-
-#     return HttpResponseRedirect(reverse('admin_dashboard') + '?view=users')
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from .models import ProfilePermission

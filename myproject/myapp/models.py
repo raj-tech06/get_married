@@ -1,19 +1,13 @@
 from django.db import models
 
 # Create your models here.
-# models.py
-from django.db import models
-# models.py
-from django.db import models
-
-from django.db import models
 
 
 class MyUser(models.Model):
     username = models.CharField(max_length=100)
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
-    phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
-    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=10, unique=True)  # ✅ Add this field
+    email = models.EmailField(unique=False)
     dob = models.DateField(blank=True, null=True)  # ✅ Add this field
     birth_place = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this field
     birth_time = models.TimeField(blank=True, null=True)  # ✅ Add this field
@@ -63,6 +57,8 @@ class GirlsProfile(models.Model):
     name = models.CharField(max_length=100)
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
     email = models.EmailField()
+    password = models.CharField(max_length=100)
+
     phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
     address = models.TextField()
     city = models.CharField(max_length=50)
@@ -96,6 +92,7 @@ class GirlProfilePhoto(models.Model):
 class BoysProfile(models.Model):
     name = models.CharField(max_length=100)
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
+    password = models.CharField(max_length=100)
 
     email = models.EmailField()
     phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
@@ -130,6 +127,8 @@ class DisabledProfile(models.Model):
     name = models.CharField(max_length=100)
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
     email = models.EmailField()
+    password = models.CharField(max_length=100)
+
     phone = models.CharField(max_length=10, blank=True, null=True)  # ✅ Add this field
     address = models.TextField()
     city = models.CharField(max_length=50)
@@ -161,6 +160,8 @@ class DivorcedProfile(models.Model):
     name = models.CharField(max_length=100)
     caste = models.CharField(max_length=100, blank=True, null=True)  # ✅ keep only this one
     email = models.EmailField()
+    password = models.CharField(max_length=100)
+
     phone = models.CharField(max_length=10, blank=True, null=True)
     address = models.TextField(null=True, blank=True)
     city = models.CharField(max_length=100)
@@ -207,10 +208,12 @@ class ProfilePermission(models.Model):
 
 
 class RegistrationNotification(models.Model):
-    email = models.EmailField()
+    username = models.CharField(max_length=100, null=True, blank=True)
+    RRnumber = models.EmailField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Notification for {self.email} - {'Read' if self.is_read else 'Unread'}"
+        return f"Notification for {self.RRnumber} - {'Read' if self.is_read else 'Unread'}"
+
 
