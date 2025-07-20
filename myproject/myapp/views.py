@@ -84,7 +84,7 @@ def login_user(request):
                 request.session['user_phone'] = user.phone
                 request.session['user_name'] = user.username
 
-                if number == '7987496842':
+                if number == '7869696686':
                     return redirect('admin_dashboard')
                 return redirect('user_dashboard')
             else:
@@ -119,7 +119,7 @@ from django.contrib import messages
 from itertools import chain
 
 def admin_dashboard(request):
-    if request.session.get('user_phone') != '7987496842':
+    if request.session.get('user_phone') != '7869696686':
         return redirect('user_dashboard')
 
     
@@ -632,7 +632,7 @@ def delete_user(request, user_id):
         messages.error(request, "User already deleted or does not exist.")
         return redirect('/admin_dashboard/?view=users')
 
-    if user.phone == '7987496842':
+    if user.phone == '7869696686':
         messages.error(request, "Admin account cannot be deleted.")
         return redirect('/admin_dashboard/?view=users')
 
@@ -662,7 +662,7 @@ from .models import MyUser
 def block_user(request, user_id):
     user = get_object_or_404(MyUser, id=user_id)
 
-    if user.phone == '7987496842':
+    if user.phone == '7869696686':
         messages.error(request, "Admin cannot be blocked.")
         return redirect('/admin_dashboard/?view=users')
 

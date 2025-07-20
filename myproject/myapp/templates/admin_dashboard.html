@@ -272,10 +272,13 @@
 
 <!-- ✅ Filtered Profile List -->
 <div class="col-md-12">
+  <label class="form-label fw-semibold">Search Profiles</label>
+  <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search by name, email, caste, city, state">
+  
   <label class="form-label fw-semibold">Select Profiles (Emails)</label>
-  <div class="form-check overflow-auto border rounded p-3" style="max-height: 200px;">
+  <div class="form-check overflow-auto border rounded p-3" style="max-height: 200px;" id="profilesContainer">
     {% for profile in filtered_profiles %}
-      <div class="form-check">
+      <div class="form-check profile-item">
         <input class="form-check-input" type="checkbox" name="profile_emails" value="{{ profile.email }}" id="email_{{ forloop.counter }}">
         <label class="form-check-label" for="email_{{ forloop.counter }}">
           {{ profile.name }} <span class="text-success fw-bold">({{ profile.caste }})</span> ({{ profile.email }}) - {{ profile.city }}, {{ profile.state }}
@@ -286,6 +289,7 @@
     {% endfor %}
   </div>
 </div>
+
 
 
     <div class="col-12 text-end">
@@ -545,6 +549,23 @@
   </div>
 </div>
 
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const profileItems = document.querySelectorAll('.profile-item');
+
+  searchInput.addEventListener('keyup', function () {
+    const searchTerm = this.value.toLowerCase();
+
+    profileItems.forEach(item => {
+      const text = item.innerText.toLowerCase();
+      if (text.includes(searchTerm)) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  });
+</script>
 
 
 {% endblock %}
